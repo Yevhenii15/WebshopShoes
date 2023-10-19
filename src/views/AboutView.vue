@@ -43,11 +43,9 @@
         Description: {{ product.productDescription }}
       </p>
       <div v-for="(image, index) in product.productImages" :key="index">
-        <img :src="image" alt="Product Image" />
-        <button @click="deleteImage(product, index)">Delete Image</button>
-      </div>
-      <input type="file" @change="uploadImage($event, product)" multiple />
-
+  <img :src="image" alt="Product Image" />
+  <button @click="deleteImage(product, index)">Delete Image</button>
+</div>
       <button class="btn-delete" @click="firebaseDeleteSingleItem(product.id)">Delete item</button>
       <p>
         <input v-model="product.productName" type="text" placeholder="New Product Name">

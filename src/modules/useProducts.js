@@ -1,41 +1,58 @@
 import { db } from '../firebase.js';
 import { ref } from 'vue';
 import { collection, onSnapshot, doc, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
-import { uploadBytes, getDownloadURL, getStorage, ref as storageRef } from 'firebase/storage';
+import { uploadBytes, getDownloadURL, getStorage, ref as storageRef , deleteObject} from 'firebase/storage';
 
 
 const uploadedImageUrl = ref('');
 
 const useProducts = () => {
-  const uploadImage = async (event, product) => {
+  const uploadImage = async (event) => {
     const storage = getStorage();
     const files = event.target.files;
-  
+
     if (!files.length) return;
-  
+
     try {
       const imagePromises = Array.from(files).map(async (file) => {
         const imageRef = storageRef(storage, `products/${Date.now()}_${file.name}`);
         await uploadBytes(imageRef, file);
         return getDownloadURL(imageRef);
       });
-  
+
       const imageUrls = await Promise.all(imagePromises);
-  
+
       // Initialize productImages as an empty array if it's not already
-      if (!Array.isArray(product.productImages)) {
-        product.productImages = [];
+      if (!Array.isArray(addProductData.value.productImages)) {
+        addProductData.value.productImages = [];
       }
-  
+
       // Append the array of image URLs to the existing productImages array
-      product.productImages.push(...imageUrls);
+      addProductData.value.productImages.push(...imageUrls);
     } catch (error) {
       console.error('Error uploading the images:', error);
     }
   };
-  const deleteImage = (product, index) => {
+  const deleteImage = async (product, index) => {
     if (index >= 0 && product.productImages && product.productImages.length > index) {
-      product.productImages.splice(index, 1);
+      // Get the URL of the image to be deleted
+      const imageUrl = product.productImages[index];
+  
+      try {
+        // Delete the image from Firestore
+        product.productImages.splice(index, 1);
+  
+        // Get the reference to the storage file based on the URL
+        const storage = getStorage();
+        const imageRef = storageRef(storage, imageUrl);
+  
+        // Delete the image from storage
+        await deleteObject(imageRef);
+  
+        console.log('Image deleted from Firestore and Storage');
+      } catch (error) {
+        console.error('Error deleting the image:', error);
+      }
     }
   };
   
@@ -65,8 +82,26 @@ const useProducts = () => {
   };
 
   const firebaseDeleteSingleItem = async (id) => {
-    await deleteDoc(doc(db, 'products', id));
-    console.log('Item deleted!', id);
+    try {
+      const product = products.value.find((item) => item.id === id);
+      if (!product) {
+        console.error('Product not found.');
+        return;
+      }
+
+      // Delete the product images from Firebase Storage
+      const storage = getStorage();
+      for (const imageUrl of product.productImages) {
+        const imageRef = storageRef(storage, imageUrl);
+        await deleteObject(imageRef);
+      }
+
+      // Delete the product document from Firestore
+      await deleteDoc(doc(db, 'products', id));
+      console.log('Product and images deleted:', id);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    }
   };
 
   const firebaseAddSingleItem = async () => {
@@ -102,12 +137,13 @@ const useProducts = () => {
       productSize: product.productSize,
       productColor: product.productColor,
       productDescription: product.productDescription,
-      productImages: product.productImages, // Updated images
+      productImages: product.productImages, // Use the array of image URLs
     }).then(() => {
       product.isEditing = false;
       console.log('Item updated!');
     });
   };
+  
 
   return {
     getProductsData,
@@ -117,7 +153,7 @@ const useProducts = () => {
     addProductData,
     firebaseUpdateSingleItem,
     uploadImage,
-    deleteImage,
+    deleteImage
   };
 };
 
