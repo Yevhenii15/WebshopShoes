@@ -43,8 +43,11 @@
         Description: {{ product.productDescription }}
       </p>
       <div v-for="(image, index) in product.productImages" :key="index">
-  <img :src="image" alt="Product Image" />
-</div>
+        <img :src="image" alt="Product Image" />
+        <button @click="deleteImage(product, index)">Delete Image</button>
+      </div>
+      <input type="file" @change="uploadImage($event, product)" multiple />
+
       <button class="btn-delete" @click="firebaseDeleteSingleItem(product.id)">Delete item</button>
       <p>
         <input v-model="product.productName" type="text" placeholder="New Product Name">
@@ -67,7 +70,7 @@
 import { ref, onMounted } from 'vue';
 import useProducts from '../modules/useProducts';
 
-const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl } = useProducts();
+const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl, deleteImage } = useProducts();
 
 
 

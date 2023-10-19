@@ -7,30 +7,35 @@ import { uploadBytes, getDownloadURL, getStorage, ref as storageRef } from 'fire
 const uploadedImageUrl = ref('');
 
 const useProducts = () => {
-  const uploadImage = async (event) => {
+  const uploadImage = async (event, product) => {
     const storage = getStorage();
     const files = event.target.files;
-
+  
     if (!files.length) return;
-
+  
     try {
       const imagePromises = Array.from(files).map(async (file) => {
         const imageRef = storageRef(storage, `products/${Date.now()}_${file.name}`);
         await uploadBytes(imageRef, file);
         return getDownloadURL(imageRef);
       });
-
+  
       const imageUrls = await Promise.all(imagePromises);
-
+  
       // Initialize productImages as an empty array if it's not already
-      if (!Array.isArray(addProductData.value.productImages)) {
-        addProductData.value.productImages = [];
+      if (!Array.isArray(product.productImages)) {
+        product.productImages = [];
       }
-
+  
       // Append the array of image URLs to the existing productImages array
-      addProductData.value.productImages.push(...imageUrls);
+      product.productImages.push(...imageUrls);
     } catch (error) {
       console.error('Error uploading the images:', error);
+    }
+  };
+  const deleteImage = (product, index) => {
+    if (index >= 0 && product.productImages && product.productImages.length > index) {
+      product.productImages.splice(index, 1);
     }
   };
   
@@ -97,7 +102,7 @@ const useProducts = () => {
       productSize: product.productSize,
       productColor: product.productColor,
       productDescription: product.productDescription,
-      productImage: product.productImage, // Preserve the existing image URL
+      productImages: product.productImages, // Updated images
     }).then(() => {
       product.isEditing = false;
       console.log('Item updated!');
@@ -112,6 +117,7 @@ const useProducts = () => {
     addProductData,
     firebaseUpdateSingleItem,
     uploadImage,
+    deleteImage,
   };
 };
 
