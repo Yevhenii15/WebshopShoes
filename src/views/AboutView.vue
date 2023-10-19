@@ -13,7 +13,8 @@
       <input v-model="addProductData.productColor" type="text" placeholder="Product Color">
       <button @click="addColor">Add Color</button>
       <input v-model="addProductData.productDescription" type="text" placeholder="Product Description">
-      <input type="file" @change="uploadImage">
+      <input type="file" @change="uploadImage" multiple>
+
     </div>
 
     <div v-for="product in products" :key="product.id">
@@ -41,7 +42,9 @@
       <p>
         Description: {{ product.productDescription }}
       </p>
-      <img :src="product.productImage" alt="Product Image" v-if="product.productImage" />
+      <div v-for="(image, index) in product.productImages" :key="index">
+  <img :src="image" alt="Product Image" />
+</div>
       <button class="btn-delete" @click="firebaseDeleteSingleItem(product.id)">Delete item</button>
       <p>
         <input v-model="product.productName" type="text" placeholder="New Product Name">

@@ -1,4 +1,3 @@
-// useProducts.js
 import { db } from '../firebase.js';
 import { ref } from 'vue';
 import { collection, onSnapshot, doc, deleteDoc, addDoc, updateDoc } from 'firebase/firestore';
@@ -9,18 +8,32 @@ const uploadedImageUrl = ref('');
 
 const useProducts = () => {
   const uploadImage = async (event) => {
-    const storage = getStorage(); // Get storage instance from the imported functions
-    const file = event.target.files[0];
-    if (!file) return;
-  
+    const storage = getStorage();
+    const files = event.target.files;
+
+    if (!files.length) return;
+
     try {
-      const imageRef = storageRef(storage, `products/${Date.now()}_${file.name}`);
-      await uploadBytes(imageRef, file);
-      uploadedImageUrl.value = await getDownloadURL(imageRef);
+      const imagePromises = Array.from(files).map(async (file) => {
+        const imageRef = storageRef(storage, `products/${Date.now()}_${file.name}`);
+        await uploadBytes(imageRef, file);
+        return getDownloadURL(imageRef);
+      });
+
+      const imageUrls = await Promise.all(imagePromises);
+
+      // Initialize productImages as an empty array if it's not already
+      if (!Array.isArray(addProductData.value.productImages)) {
+        addProductData.value.productImages = [];
+      }
+
+      // Append the array of image URLs to the existing productImages array
+      addProductData.value.productImages.push(...imageUrls);
     } catch (error) {
-      console.error('Error uploading the image:', error);
+      console.error('Error uploading the images:', error);
     }
-  }
+  };
+  
   const products = ref([]);
   const productDataRef = collection(db, 'products');
 
@@ -31,7 +44,7 @@ const useProducts = () => {
     productSize: [],
     productColor: [],
     productDescription: '',
-    productImage: '', // Add a field for product image URL
+    productImage: [], // Add a field for product image URL
   });
 
   const getProductsData = () => {
@@ -62,15 +75,16 @@ const useProducts = () => {
       productSize: productSize,
       productColor: productColor,
       productDescription: addProductData.value.productDescription,
-      productImage: uploadedImageUrl.value, // Set the product image URL
+      productImages: addProductData.value.productImages, // Use the array of image URLs
     }).then(() => {
+      // Reset other fields and the image URLs
       addProductData.value.productName = '';
       addProductData.value.productPrice = '';
       addProductData.value.productInStock = '';
-      addProductData.value.productSize = '';
-      addProductData.value.productColor = '';
+      addProductData.value.productSize = [];
+      addProductData.value.productColor = [];
       addProductData.value.productDescription = '';
-      addProductData.value.productImage = '';
+      addProductData.value.productImages = []; // Reset the image URLs
     });
     console.log('Item added!');
   };
