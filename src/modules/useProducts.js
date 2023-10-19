@@ -10,8 +10,9 @@ const useProducts = () => {
     productName: '',
     productPrice: '',
     productInStock: '',
+    productSize: [],
   });
-
+  
   const getProductsData = () => {
     onSnapshot(productDataRef, (snapshot) => {
       products.value = snapshot.docs.map((doc) => {
@@ -22,31 +23,34 @@ const useProducts = () => {
         };
       });
     });
-  }
+  };
 
   const firebaseDeleteSingleItem = async (id) => {
     await deleteDoc(doc(db, 'products', id));
     console.log('Item deleted!', id);
-  }
+  };
 
   const firebaseAddSingleItem = async () => {
     await addDoc(collection(db, 'products'), {
       productName: addProductData.value.productName,
       productPrice: addProductData.value.productPrice,
       productInStock: addProductData.value.productInStock,
+      productSize: addProductData.value.productSize.split(',').map(size => size.trim()), // Split the sizes input into an array
     }).then(() => {
       addProductData.value.productName = '';
       addProductData.value.productPrice = '';
       addProductData.value.productInStock = '';
+      addProductData.value.productSize = '';
     });
     console.log('Item added!');
-  }
+  };
 
   const firebaseUpdateSingleItem = async (product) => {
     await updateDoc(doc(productDataRef, product.id), {
       productName: product.productName,
       productPrice: product.productPrice,
       productInStock: product.productInStock,
+      productSize: product.productSize,
     }).then(() => {
       // Toggle editing state to false
       product.isEditing = false;
@@ -62,6 +66,6 @@ const useProducts = () => {
     addProductData,
     firebaseUpdateSingleItem,
   };
-}
+};
 
 export default useProducts;
