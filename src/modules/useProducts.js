@@ -55,6 +55,37 @@ const useProducts = () => {
       }
     }
   };
+  const addImagesToProduct = async (product, event) => {
+    const storage = getStorage();
+    const files = event.target.files;
+
+    if (!files.length) return;
+
+    try {
+      const imagePromises = Array.from(files).map(async (file) => {
+        const imageRef = storageRef(storage, `products/${Date.now()}_${file.name}`);
+        await uploadBytes(imageRef, file);
+        return getDownloadURL(imageRef);
+      });
+
+      const imageUrls = await Promise.all(imagePromises);
+
+      // Append the array of new image URLs to the existing productImages array
+      if (!Array.isArray(product.productImages)) {
+        product.productImages = [];
+      }
+      product.productImages.push(...imageUrls);
+
+      // Update the product in Firestore with the new images
+      await updateDoc(doc(db, 'products', product.id), {
+        productImages: product.productImages, // Updated array of image URLs
+      });
+
+      console.log('Images added to product and updated in Firestore');
+    } catch (error) {
+      console.error('Error uploading the images:', error);
+    }
+  };
   
   const products = ref([]);
   const productDataRef = collection(db, 'products');
@@ -153,7 +184,8 @@ const useProducts = () => {
     addProductData,
     firebaseUpdateSingleItem,
     uploadImage,
-    deleteImage
+    deleteImage,
+    addImagesToProduct
   };
 };
 

@@ -46,6 +46,8 @@
   <img :src="image" alt="Product Image" />
   <button @click="deleteImage(product, index)">Delete Image</button>
 </div>
+<input type="file" @change="addImagesToProduct(product, $event)" multiple>
+
       <button class="btn-delete" @click="firebaseDeleteSingleItem(product.id)">Delete item</button>
       <p>
         <input v-model="product.productName" type="text" placeholder="New Product Name">
@@ -68,7 +70,7 @@
 import { ref, onMounted } from 'vue';
 import useProducts from '../modules/useProducts';
 
-const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl, deleteImage } = useProducts();
+const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl, deleteImage, addImagesToProduct} = useProducts();
 
 
 
