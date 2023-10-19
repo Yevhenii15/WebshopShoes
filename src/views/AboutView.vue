@@ -11,6 +11,10 @@
       <input v-model="addProductData.productInStock" type="text" placeholder="Product In Stock">
       <input v-model="addProductData.productSize" type="text" placeholder="Product Size">
       <button @click="addSize">Add Size</button>
+      <input v-model="addProductData.productColor" type="text" placeholder="Product Color">
+      <button @click="addColor">Add Color</button>
+      <input v-model="addProductData.productDescription" type="text" placeholder="Product Description">
+
     </div>
 
     <div v-for="product in products" :key="product.id">
@@ -29,6 +33,15 @@
           <button @click="deleteSize(product, index)">Delete</button>
         </p>
       </div>
+      <div v-for="(color, index) in product.productColor" :key="index">
+        <p>
+          Color: {{ color }}
+          <button @click="deleteColor(product, index)">Delete</button>
+        </p>
+      </div>
+      <p>
+          Description: {{ product.productDescription }}
+      </p>
       <button class="btn-delete" @click="firebaseDeleteSingleItem(product.id)">Delete item</button>
       <p>
         <input v-model="product.productName" type="text" placeholder="New Product Name">
@@ -36,6 +49,10 @@
         <input v-model="product.productInStock" type="text" placeholder="New Product In Stock">
         <input v-model="product.newSize" type="text" placeholder="New Product Size">
         <button @click="addProductSize(product)">Add Size</button>
+        <input v-model="product.newColor" type="text" placeholder="New Product Color">
+        <button @click="addProductColor(product)">Add Color</button>
+        <input v-model="product.productDescription" type="text" placeholder="New Product Description">
+
       </p>
       <button class="btn-edit" @click="product.isEditing = true">Edit Item</button>
       <button class="btn-update" @click="firebaseUpdateSingleItem(product)" v-if="product.isEditing">Update</button>
@@ -70,6 +87,28 @@ const addProductSize = (product) => {
 const deleteSize = (product, index) => {
   if (index >= 0) {
     product.productSize.splice(index, 1);
+  }
+};
+
+const addColor = () => {
+  if (typeof addProductData.productColor !== 'string' || !addProductData.productColor) {
+    addProductData.productColor = '';
+  }
+  addProductData.productColor = addProductData.productColor.split(',').map(color => color.trim());
+};
+
+const addProductColor = (product) => {
+  if (!product.newColor) return;
+  if (!product.productColor) {
+    product.productColor = [];
+  }
+  product.productColor.push(product.newColor);
+  product.newColor = '';
+};
+
+const deleteColor = (product, index) => {
+  if (index >= 0) {
+    product.productColor.splice(index, 1);
   }
 };
 

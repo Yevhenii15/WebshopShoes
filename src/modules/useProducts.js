@@ -11,6 +11,8 @@ const useProducts = () => {
     productPrice: '',
     productInStock: '',
     productSize: [],
+    productColor: [],
+    productDescription: '',
   });
   
   const getProductsData = () => {
@@ -36,11 +38,15 @@ const useProducts = () => {
       productPrice: addProductData.value.productPrice,
       productInStock: addProductData.value.productInStock,
       productSize: addProductData.value.productSize.split(',').map(size => size.trim()), // Split the sizes input into an array
+      productColor: addProductData.value.productColor.split(',').map(color => color.trim()), // Split the colors input into an array
+      productDescription: addProductData.value.productDescription,
     }).then(() => {
       addProductData.value.productName = '';
       addProductData.value.productPrice = '';
       addProductData.value.productInStock = '';
       addProductData.value.productSize = '';
+      addProductData.value.productColor = '';
+      addProductData.value.productDescription = '';
     });
     console.log('Item added!');
   };
@@ -51,6 +57,8 @@ const useProducts = () => {
       productPrice: product.productPrice,
       productInStock: product.productInStock,
       productSize: product.productSize,
+      productColor: product.productColor,
+      productDescription: product.productDescription,
     }).then(() => {
       // Toggle editing state to false
       product.isEditing = false;
