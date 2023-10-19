@@ -1,4 +1,3 @@
-<!-- AboutView.vue -->
 <template>
   <div class="about">
     <h1>This is an about page</h1>
@@ -14,7 +13,7 @@
       <input v-model="addProductData.productColor" type="text" placeholder="Product Color">
       <button @click="addColor">Add Color</button>
       <input v-model="addProductData.productDescription" type="text" placeholder="Product Description">
-
+      <input type="file" @change="uploadImage">
     </div>
 
     <div v-for="product in products" :key="product.id">
@@ -40,8 +39,9 @@
         </p>
       </div>
       <p>
-          Description: {{ product.productDescription }}
+        Description: {{ product.productDescription }}
       </p>
+      <img :src="product.productImage" alt="Product Image" v-if="product.productImage" />
       <button class="btn-delete" @click="firebaseDeleteSingleItem(product.id)">Delete item</button>
       <p>
         <input v-model="product.productName" type="text" placeholder="New Product Name">
@@ -52,7 +52,6 @@
         <input v-model="product.newColor" type="text" placeholder="New Product Color">
         <button @click="addProductColor(product)">Add Color</button>
         <input v-model="product.productDescription" type="text" placeholder="New Product Description">
-
       </p>
       <button class="btn-edit" @click="product.isEditing = true">Edit Item</button>
       <button class="btn-update" @click="firebaseUpdateSingleItem(product)" v-if="product.isEditing">Update</button>
@@ -62,11 +61,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import useProducts from '../modules/useProducts';
-import { onMounted } from 'vue';
 
-const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem } = useProducts();
+const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl } = useProducts();
+
+
 
 const addSize = () => {
   if (typeof addProductData.productSize !== 'string' || !addProductData.productSize) {
