@@ -23,7 +23,7 @@
             and empower your personal style.”
         </p>
         <div class="border-solid border-2 border-brownText rounded-full py-2 px-6 w-[19%]">
-          <a class="font-lato text-[2rem] text-brownText " href="./shoes">See products</a>
+          <a class="font-lato text-[2rem] text-brownText " href="../shoes">See products</a>
           </div>
       </div>
     </section>

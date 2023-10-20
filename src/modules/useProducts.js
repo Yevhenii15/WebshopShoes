@@ -97,8 +97,9 @@ const useProducts = () => {
     productSize: [],
     productColor: [],
     productDescription: '',
-    productImage: [], // Add a field for product image URL
+    productImages: [], // Initialize as an empty array
   });
+  
 
   const getProductsData = () => {
     onSnapshot(productDataRef, (snapshot) => {

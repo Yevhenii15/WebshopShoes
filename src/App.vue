@@ -4,6 +4,7 @@ import { RouterLink, RouterView } from 'vue-router'
 import { onMounted, ref } from 'vue';
 import { auth } from './firebase.js'
 import { signOut, onAuthStateChanged } from 'firebase/auth'
+import FooterSection from './components/FooterSection.vue'
 
 import router from './router'
 
@@ -70,7 +71,8 @@ let logOut = () => {
   </header>
 
   <RouterView />
-</template>
+<!--   <FooterSection :sections="sections" />
+ --></template>
 
 
 <style scoped>
