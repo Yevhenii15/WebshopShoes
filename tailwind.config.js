@@ -12,24 +12,23 @@ module.exports = {
       xxxl: '1600px'
     },
     fontFamily: {
-      'sans-serif': 'futura-pt',
-      'sans-serif': 'acumin-pro-wide'
+      'lato': ['Lato', 'Sans-serif'],
+      'montserrat': ['Montserrat', 'Sans-serif']
+    },
+    fontSize: {
+      'h1': '1.3rem',
+      'p': '.5rem',
     },
     extend: {
       colors: {
-        darkBG: '#181818',
-        colorBG: '#1ECECE',
-        taintedBG: '#111111',
-        lightText: '#F4F4F4',
-        normalText: '#afafaf',
-        darkerText: '#606060',
-        darkText: '#242424',
-        baseColor: '#1ECECE',
-        manaClub: '#a809e5',
-        vertex: '#ea3397',
-        deft: '#20e062',
-        dub: '#ffd930'
-      }
+        brownText: '#582C21',
+        beige: '#DAAE89',
+        whiteBg: '#F2F2F2',
+      },
+      backgroundImage: {
+        'bg': "url('./images/bg.png')",
+        'bg-header': "url('./images/bg-header.png')",
+      },
     }
   },
   plugins: [],

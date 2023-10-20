@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="about bg-bg bg-aut bg-top">
     <h1>This is an about page</h1>
 
     <button class="btn-add" @click="firebaseAddSingleItem">Add Item</button>
