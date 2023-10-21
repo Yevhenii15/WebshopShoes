@@ -17,7 +17,8 @@ module.exports = {
     },
     fontSize: {
       'h1': '1.3rem',
-      'p': '1rem',
+      'p': '.9rem',
+      'h1-lg': '3rem',
     },
     extend: {
       colors: {

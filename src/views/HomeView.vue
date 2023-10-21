@@ -4,6 +4,7 @@
 <template>
   <body class="bg-bg bg-aut bg-top h-[654px] relative" >
     <img src="../images/circletop.png" class="w-auto h-auto absolute top-[-220px] z-0 " alt="">
+    <div class=" relative z-20">
     <div class="z-10 relative px-[8%] pt-[10%]">
       <div>
         <div class="relative top-[10px]">
@@ -23,11 +24,12 @@
             and empower your personal style.”
         </p>
         <div class="border-solid border-2 border-brownText rounded-full py-2 px-6 w-[19%]">
-          <a class="font-lato text-[2rem] text-brownText " href="../shoes">See products</a>
+          <a class="font-lato text-[2rem] text-brownText" href="../shoes">See products</a>
           </div>
       </div>
     </div>
-    <div class="flex justify-end">
+  </div>
+  <div class="flex justify-end">
       <img src="../images/shoes.png" class="w-[650px]  absolute z-10 top-[163px]" alt="">
       <img src="../images/circlebottom.png" class="w-[1000px] h-[550px] absolute z-0 top-[104px]" alt="">
     </div>
