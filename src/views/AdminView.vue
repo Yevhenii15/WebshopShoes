@@ -1,5 +1,5 @@
 <template>
-    <div class="admin bg-bg bg-auto bg-top px-[8%] pt-[5rem]">
+    <div class="admin bg-bg bg-auto bg-top px-[8%] py-[5rem]">
       <h1 class="text-[2rem] text-brownText font-lato uppercase text-center mb-5">Add new product</h1>
 
       <div class="flex flex-wrap justify-between px-[15%]">
@@ -24,8 +24,9 @@
     ">
         <button class="btn-add hover:bg-beige bg-[rgba(255,255,255,0.5)]border-solid border-2 border-brownText font-lato text-brownText w-[20%] rounded-full bg-[rgba(255,255,255,0.75)] py-1 px-6" @click="firebaseAddSingleItem">Add Item</button>
       </div>
+
       <div class="products flex justify-between">
-        <div class="w-[32%] my-10 p-5 bg-[rgba(255,255,255,0.75)]" v-for="product in products" :key="product.id">
+        <div class="w-[32%] my-10 p-5 bg-[rgba(255,255,255,0.75)] z-20" v-for="product in products" :key="product.id">
             <div v-for="(image, index) in product.productImages" :key="index">
                 <img class="w-[100%] h-[370px] object-cover object-center" :src="image" alt="Product Image" />
                 <button class="hover:bg-beige border-solid border-2 border-brownText font-lato text-brownText  rounded-full bg-transparent py-1 px-6 my-3" @click="deleteImage(product, index)">Delete Image</button>
@@ -93,6 +94,7 @@
   <script setup>
   import { ref, onMounted } from 'vue';
   import useProducts from '../modules/useProducts';
+
   
   const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl, deleteImage, addImagesToProduct} = useProducts();
   

@@ -4,7 +4,7 @@
 <template>
   <body class="bg-bg bg-aut bg-top h-[654px] relative" >
     <img src="../images/circletop.png" class="w-auto h-auto absolute top-[-220px] z-0 " alt="">
-    <section class="z-10 relative px-[8%] pt-[10%]">
+    <div class="z-10 relative px-[8%] pt-[10%]">
       <div>
         <div class="relative top-[10px]">
           <h1 class="text-[3.5rem] text-brownText font-lato uppercase z-10 relative">Shoes</h1>
@@ -26,7 +26,7 @@
           <a class="font-lato text-[2rem] text-brownText " href="../shoes">See products</a>
           </div>
       </div>
-    </section>
+    </div>
     <div class="flex justify-end">
       <img src="../images/shoes.png" class="w-[650px]  absolute z-10 top-[163px]" alt="">
       <img src="../images/circlebottom.png" class="w-[1000px] h-[550px] absolute z-0 top-[104px]" alt="">

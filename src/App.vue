@@ -10,6 +10,8 @@ import router from './router'
 
 let isLoggedIn = ref(false)
 
+let sections = ref([]); // Define the sections variable
+
 onMounted(() => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -44,8 +46,11 @@ let logOut = () => {
         <img src="./images/logo.png" class="w-[100px] h-auto" alt="">
       </RouterLink>
 
-      <nav class="flex items-center w-[28%] justify-between">
+      <nav :class="{ 'logged-in-navbar': isLoggedIn, 'logged-out-navbar': !isLoggedIn }" class="flex items-center justify-between">
         <div class="flex items-center justify-between w-[75%]">
+          <RouterLink v-if="isLoggedIn" to="/admin">Admin</RouterLink>
+          <button @click="logOut" v-if="isLoggedIn">Log Out</button>
+
           <div class="relative flex justify-center">
             <RouterLink class="z-10" to="/shoes">Shoes</RouterLink>
             <div class="absolute w-[70px] h-[13px] bg-beige top-[18px] z-0"></div>
@@ -59,11 +64,7 @@ let logOut = () => {
         </div>
         
         <img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt="">
-
-        <RouterLink class="hidden" to="/admin">Admin</RouterLink>
-        <RouterLink class="hidden" to="/login">Login</RouterLink>
-        <button class="hidden" @click="logOut" v-if="isLoggedIn">Log Out</button>
-      </nav>
+        </nav>
       </div>
       
 
@@ -71,10 +72,16 @@ let logOut = () => {
   </header>
 
   <RouterView />
-<!--   <FooterSection :sections="sections" />
- --></template>
+  <FooterSection :sections="sections" />
+</template>
 
 
 <style scoped>
+.logged-in-navbar {
+  width: 45%; /* Adjust this width as needed */
+}
 
+.logged-out-navbar {
+  width: 28%; /* Adjust this width as needed */
+}
 </style>

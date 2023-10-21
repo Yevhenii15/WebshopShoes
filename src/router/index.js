@@ -33,38 +33,36 @@ const router = createRouter({
       name: 'admin',
       component: () => import('../views/AdminView.vue'),
       meta: {
-        requiresAuth: true
-      }
+        requiresAuth: true, // Add a meta field to indicate that authentication is required
+      },
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
-    }
+      component: () => import('../views/LoginView.vue'),
+    },
   ]
 })
-
-router.beforeEach(async(to, from, next) => {
-  if(to.matched.some(record => record.meta.requiresAuth)) {
+router.beforeEach(async (to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Check if the user is authenticated
     if (await getCurrentUser()) {
-      next()
+      next();
+    } else {
+      // If not authenticated, redirect to the login page
+      next({ path: '/login' });
     }
-    else {
-      next({path: '/login'})
-    }
+  } else {
+    next();
   }
-  else {
-    next()
-  }
-})
+});
 
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
-    console.log('test getCurrentUser', getCurrentUser);
     const unsubscribe = onAuthStateChanged(
       getAuth(),
       user => {
-        unsubscribe(); // Corrected function name
+        unsubscribe();
         resolve(user);
       },
       reject
@@ -72,5 +70,4 @@ const getCurrentUser = () => {
   });
 };
 
-
-export default router
+export default router;
