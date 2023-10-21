@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import ShoppingCart from '../components/ShoppingCart.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,9 @@ const router = createRouter({
       name: 'product-detail',
       component: () => import('../views/ProductDetail.vue')
     },
+    { path: '/cart/:id',
+      name: 'cart',
+      component: ShoppingCart },
     {
       path: '/sales',
       name: 'sales',

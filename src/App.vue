@@ -62,8 +62,8 @@ let logOut = () => {
             <RouterLink to="/about">About us</RouterLink>
           </div>
         </div>
+        <RouterLink to="/cart/:id"><img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt=""></RouterLink>
         
-        <img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt="">
         </nav>
       </div>
       

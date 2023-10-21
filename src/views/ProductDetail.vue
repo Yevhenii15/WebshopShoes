@@ -1,6 +1,6 @@
 <template>
     <div class="product-detail bg-bg bg-auto bg-top pb-[5rem] w-[100%]">
-      <div class=" flex " v-if="product">
+      <div class=" flex relative z-20 " v-if="product">
         <div class="relative w-[50%] flex justify-center items-center">
           <img class="relative object-cover" src="../images/product-bg.png" alt="">
           <img class="absolute w-[41%] h-[42vh] object-cover object-center" :src="product.productImages[0]" :alt="product.productName" />
@@ -81,7 +81,8 @@
   import { useRoute } from 'vue-router';  // Import the useRoute function
   import { doc, getDoc } from 'firebase/firestore';
   import { db } from '../firebase';  // Import your Firebase configuration
-  
+  import { shoppingCart } from '../modules/ShoppingCart.js'; // Import the shopping cart data
+
   export default {
     setup() {
       const route = useRoute();  // Use useRoute to access route parameters
@@ -111,9 +112,19 @@
       };
   
       const addToCart = () => {
-        // Add the selected product, size, and color to the cart
-        console.log('Added to Cart:', product.value, selectedSize, selectedColor);
-      };
+        if (product.value && selectedSize.value && selectedColor.value) {
+            const itemToAdd = {
+            product: product.value,
+            size: selectedSize.value,
+            color: selectedColor.value,
+            };
+            shoppingCart.value.push(itemToAdd);
+            console.log("added", itemToAdd);
+        } else {
+            console.log("One or more of the required fields is not set.");
+        }
+        };
+
   
       const fetchProduct = async () => {
         const productId = route.params.id;  // Access the 'id' parameter from the route
