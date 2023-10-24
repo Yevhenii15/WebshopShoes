@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import ShoppingCart from '../components/ShoppingCart.vue';
+import SignUpView from '../views/SignUpView.vue'; // Import SignUpView
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,29 +43,50 @@ const router = createRouter({
       name: 'admin',
       component: () => import('../views/AdminView.vue'),
       meta: {
-        requiresAuth: true, // Add a meta field to indicate that authentication is required
+        requiresAuth: true, // Indicates that authentication is required
+        requiresAdmin: true, // Indicates that admin access is required
       },
     },
+    
     {
       path: '/login',
       name: 'login',
       component: () => import('../views/LoginView.vue'),
     },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: SignUpView,
+    },
   ]
 })
+
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    // Check if the user is authenticated
-    if (await getCurrentUser()) {
-      next();
+  const currentUser = await getCurrentUser();
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (currentUser) {
+      const tokenResult = await currentUser.getIdTokenResult();
+      if (tokenResult && tokenResult.claims && tokenResult.claims.admin) {
+        console.log('User is logged in as an admin now');
+        next();
+      } 
+      else {
+        next();
+        
+      }
     } else {
-      // If not authenticated, redirect to the login page
-      next({ path: '/login' });
+      console.log('User is not logged in. Redirecting to login page.');
+      next({ name: 'login' }); // Redirect to the login page
     }
   } else {
     next();
   }
 });
+
+
+
+
+
 
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
