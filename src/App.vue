@@ -77,8 +77,8 @@ onMounted(() => {
           </div>
 
           <RouterLink to="/sales">Sales</RouterLink>
-          <RouterLink to="/login">Login</RouterLink>
-          <RouterLink to="/signup">Sign Up</RouterLink>
+          <RouterLink v-if="!isLoggedIn" to="/login">Login</RouterLink>
+          <RouterLink v-if="!isLoggedIn" to="/signup">Sign Up</RouterLink>
           <button @click="logOut" v-if="isLoggedIn">Log Out</button>
 
           <div class="border-solid border-2 border-brownText rounded-full py-2 px-6">
@@ -101,21 +101,21 @@ onMounted(() => {
 
 <style scoped>
 .logged-in-navbar-as-admin {
-  width: 47%; /* Adjust this width as needed */
+  width: 42%; /* Adjust this width as needed */
 }
 .logged-in-div-as-admin{
-width: 83%;
+width: 82%;
 }
 .logged-in {
-  width: 40%;
+  width: 35%;
 }
 .logged-out{
-  width: 35%;
+  width: 40%;
 }
 .logged-in-div {
   width: 78%;
 }
 .logged-out-div{
-  width: 75%;
+  width: 80%;
 }
 </style>

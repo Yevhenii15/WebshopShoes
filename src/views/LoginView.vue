@@ -40,7 +40,7 @@
                    console.log('User is not an admin.');
 
                    console.log('Previous route:', router.previousRoute);
-                   if (router.previousRoute) {
+                   if (router.previousRoute.name !== 'signup') {
                      router.push(router.previousRoute.fullPath);
                    } else {
                      // If no previous route, go to the default route

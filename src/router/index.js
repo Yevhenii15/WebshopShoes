@@ -63,19 +63,23 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const currentUser = await getCurrentUser();
+
+  // Capture the previous route
+  if (from) {
+    router.previousRoute = from;
+  }
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (currentUser) {
       const tokenResult = await currentUser.getIdTokenResult();
       if (tokenResult && tokenResult.claims && tokenResult.claims.admin) {
         console.log('User is logged in as an admin now');
         next();
-      } 
-      else {
+      } else {
         next();
-        
       }
     } else {
-      console.log('User is not logged in. Redirecting to login page.');
+      console.log('User is not logged in. Redirecting to the login page.');
       next({ name: 'login' }); // Redirect to the login page
     }
   } else {
@@ -83,16 +87,11 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-
-
-
-
-
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(
       getAuth(),
-      user => {
+      (user) => {
         unsubscribe();
         resolve(user);
       },
@@ -100,5 +99,4 @@ const getCurrentUser = () => {
     );
   });
 };
-
 export default router;
