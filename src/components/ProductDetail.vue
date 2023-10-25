@@ -59,6 +59,34 @@
                 </ul>
               </div>
             </div>
+            <div class="flex flex-col">
+              <label for="productInStock" class="text-brownText text-h1 font-montserrat mb-1">Product In Stock:</label>
+              <div class="relative">
+                <button
+                  id="productInStock-dropdown"
+                  class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
+                  @click="toggleProductInStockDropdown"
+                >
+                  {{ selectedProductInStock || 'Select Quantity' }}
+                </button>
+                <ul
+                  id="productInStock-options"
+                  class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                >
+                  <li
+                    v-for="variant in variants"
+                    :key="variant"
+                    class="px-4 py-2 text-sm text-brownText hover-bg-gray-100 cursor-pointer"
+                    @click="selectProductInStock(variant)"
+                  >
+                    {{ variant }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+
+
           </div>
           
           <p class="w-[40%] text-brownText font-montserrat text-h1 mb-1">Description: </p>
@@ -78,27 +106,41 @@
   
   <script>
   import { ref, onMounted } from 'vue';
-  import { useRoute } from 'vue-router';  // Import the useRoute function
-  import { doc, getDoc } from 'firebase/firestore';
-  import { db } from '../firebase';  // Import your Firebase configuration
-  import { shoppingCart } from '../modules/ShoppingCart.js'; // Import the shopping cart data
-
+  import { useRoute } from 'vue-router';
+  import { doc, getDoc, updateDoc } from 'firebase/firestore';
+  import { db, auth } from '../firebase'; // Import your Firebase configuration, including auth
+  
   export default {
     setup() {
-      const route = useRoute();  // Use useRoute to access route parameters
+      const route = useRoute();
       const product = ref(null);
-      const selectedSize = ref(''); // Initialize selectedSize
-      const selectedColor = ref(''); // Initialize selectedColor
-      
-  
+      const selectedSize = ref('');
+      const selectedColor = ref('');
+      const selectedProductInStock = ref(null);
+    const variants = ref([]);
+
+    const toggleProductInStockDropdown = () => {
+      const productInStockOptions = document.getElementById('productInStock-options');
+      productInStockOptions.classList.toggle('hidden');
+    };
+
+    const selectProductInStock = (variant) => {
+      selectedProductInStock.value = variant;
+      toggleProductInStockDropdown();
+    };
+
+    // Generate variants from 1 to 9
+    for (let i = 1; i <= 9; i++) {
+      variants.value.push(i);
+    }  
       const toggleSizeDropdown = () => {
         const sizeOptions = document.getElementById('size-options');
         sizeOptions.classList.toggle('hidden');
       };
-  
+      
       const selectSize = (size) => {
         selectedSize.value = size;
-        toggleSizeDropdown(); // Close the size dropdown after selection
+        toggleSizeDropdown();
       };
   
       const toggleColorDropdown = () => {
@@ -108,26 +150,58 @@
   
       const selectColor = (color) => {
         selectedColor.value = color;
-        toggleColorDropdown(); // Close the color dropdown after selection
+        toggleColorDropdown();
       };
-  
-      const addToCart = () => {
-        if (product.value && selectedSize.value && selectedColor.value) {
-            const itemToAdd = {
-            product: product.value,
-            size: selectedSize.value,
-            color: selectedColor.value,
-            };
-            shoppingCart.value.push(itemToAdd);
-            console.log("added", itemToAdd);
-        } else {
-            console.log("One or more of the required fields is not set.");
+
+      const addToCart = async () => {
+  if (product.value && selectedSize.value && selectedColor.value && selectedProductInStock.value) {
+    // Get the current user's UID
+    const user = auth.currentUser;
+
+    if (user) {
+      // Create a simplified item to add to the cart
+      const itemToAdd = {
+        id: product.value.id,             // Product ID
+        name: product.value.productName,  // Product name
+        price: product.value.productPrice, // Product price
+        size: selectedSize.value,         // Selected size
+        color: selectedColor.value,       // Selected color
+        quantity: selectedProductInStock.value, // Selected productInStock
+      };
+
+      // Get the user's cart document from Firestore
+      const userCartRef = doc(db, 'userCarts', user.uid); // Use the UID from the authenticated user
+      const userCartSnapshot = await getDoc(userCartRef);
+
+      if (userCartSnapshot.exists()) {
+        // If the user has a cart, update it with the new item
+        const userCartData = userCartSnapshot.data();
+        if (!userCartData.cart || !Array.isArray(userCartData.cart)) {
+          // Initialize the cart field as an empty array if it's not already
+          userCartData.cart = [];
         }
-        };
+        userCartData.cart.push(itemToAdd);
+
+        // Update the user's cart in Firestore
+        await updateDoc(userCartRef, { cart: userCartData.cart });
+
+        console.log('Item added to the cart:', itemToAdd);
+      } else {
+        // Handle the case where the user doesn't have a cart yet
+        console.log('User cart document does not exist.');
+      }
+    } else {
+      console.log('User is not authenticated.');
+    }
+  } else {
+    console.log("One or more of the required fields is not set.");
+  }
+};
 
   
+  
       const fetchProduct = async () => {
-        const productId = route.params.id;  // Access the 'id' parameter from the route
+        const productId = route.params.id;
   
         try {
           const productDoc = doc(db, 'products', productId);
@@ -157,8 +231,11 @@
         toggleColorDropdown,
         selectColor,
         addToCart,
+        selectedProductInStock,
+        toggleProductInStockDropdown,
+        selectProductInStock,
+        variants,
       };
     },
   };
   </script>
-  

@@ -4,12 +4,18 @@ import { RouterLink, RouterView } from 'vue-router';
 import { auth } from './firebase.js';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import FooterSection from './components/FooterSection.vue';
+import ShoppingCart from './components/ShoppingCart.vue';
 import router from './router';
 
 const isLoggedIn = ref(false);
 const isAdmin = ref(false);
 const sections = ref([]);
+const showCart = ref(false); // Use ref to create a reactive reference
+const cart = ref([]);
 
+const toggleCart = () => {
+  showCart.value = !showCart.value; // Access .value to update the reactive reference
+};
 const logOut = () => {
   signOut(auth)
     .then(() => {
@@ -85,7 +91,7 @@ onMounted(() => {
             <RouterLink to="/about">About us</RouterLink>
           </div>
         </div>
-        <RouterLink to="/cart/:id"><img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt=""></RouterLink>
+        <button @click="toggleCart"><img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt=""></button>
         
         </nav>
       </div>
@@ -96,6 +102,9 @@ onMounted(() => {
 
   <RouterView />
   <FooterSection :sections="sections" />
+  <div v-if="showCart">
+    <ShoppingCart :cart="cart" @closeCart="showCart = false" />
+  </div>
 </template>
 
 
@@ -118,4 +127,5 @@ width: 82%;
 .logged-out-div{
   width: 80%;
 }
+
 </style>

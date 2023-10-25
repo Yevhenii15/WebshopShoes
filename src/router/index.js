@@ -1,8 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import SalesView from '../views/SalesView.vue'
+import ShoesView from '../views/ShoesView.vue'
+import ProductDetail from '../components/ProductDetail.vue'
 import ShoppingCart from '../components/ShoppingCart.vue';
-import SignUpView from '../views/SignUpView.vue'; // Import SignUpView
+import AdminView from '../views/AdminView.vue';
+import LoginView from '../components/LoginView.vue'; // Import LoginView
+import SignUpView from '../components/SignUpView.vue'; // Import SignUpView
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,30 +24,32 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      component: AboutView
+    },
+    {
+      path: '/sales',
+      name: 'sales',
+      component: SalesView
     },
     {
       path: '/shoes',
       name: 'shoes',
-      component: () => import('../views/ShoesView.vue')
+      component: ShoesView
     },
     {
       path: '/product/:id', // Define a route parameter named 'id'
       name: 'product-detail',
-      component: () => import('../views/ProductDetail.vue')
+      component: ProductDetail
     },
-    { path: '/cart/:id',
-      name: 'cart',
-      component: ShoppingCart },
     {
-      path: '/sales',
-      name: 'sales',
-      component: () => import('../views/SalesView.vue')
+      path: '/cart/:id',
+      name: 'cart',
+      component: ShoppingCart,
     },
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('../views/AdminView.vue'),
+      component: AdminView,
       meta: {
         requiresAuth: true, // Indicates that authentication is required
         requiresAdmin: true, // Indicates that admin access is required
@@ -51,12 +59,12 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue'),
+      component: LoginView
     },
     {
       path: '/signup',
       name: 'signup',
-      component: SignUpView,
+      component: SignUpView
     },
   ]
 })
