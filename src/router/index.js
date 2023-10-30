@@ -1,11 +1,10 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import HomeView from '../views/HomeView.vue'
-import AboutView from '../views/AboutView.vue'
-import SalesView from '../views/SalesView.vue'
-import ShoesView from '../views/ShoesView.vue'
-import ProductDetail from '../components/ProductDetail.vue'
-import ShoppingCart from '../components/ShoppingCart.vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import HomeView from '../views/HomeView.vue';
+import AboutView from '../views/AboutView.vue';
+import SalesView from '../views/SalesView.vue';
+import ShoesView from '../views/ShoesView.vue';
+import ProductDetail from '../components/ProductDetail.vue';
 import AdminView from '../views/AdminView.vue';
 import LoginView from '../components/LoginView.vue'; // Import LoginView
 import SignUpView from '../components/SignUpView.vue'; // Import SignUpView
@@ -16,84 +15,85 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView
+      component: HomeView,
     },
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: AboutView
+      component: AboutView,
     },
     {
       path: '/sales',
       name: 'sales',
-      component: SalesView
+      component: SalesView,
     },
     {
       path: '/shoes',
       name: 'shoes',
-      component: ShoesView
+      component: ShoesView,
     },
     {
-      path: '/product/:id', // Define a route parameter named 'id'
+      path: '/product/:id',
       name: 'product-detail',
-      component: ProductDetail
+      component: ProductDetail,
     },
     {
       path: '/cart/:id',
       name: 'cart',
-      component: ShoppingCart,
+      component: () => import('../components/ShoppingCart.vue'), // Import and use ShoppingCart when needed
     },
     {
       path: '/admin',
       name: 'admin',
       component: AdminView,
       meta: {
-        requiresAuth: true, // Indicates that authentication is required
-        requiresAdmin: true, // Indicates that admin access is required
+        requiresAuth: true,
+        requiresAdmin: true,
       },
     },
-    
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
     },
     {
       path: '/signup',
       name: 'signup',
-      component: SignUpView
+      component: SignUpView,
     },
-  ]
-})
+  ],
+});
 
 router.beforeEach(async (to, from, next) => {
-  const currentUser = await getCurrentUser();
+  try {
+    // Here, you should obtain the current user using Firebase Authentication
+    const currentUser = getAuth().currentUser; // Get the current user directly
 
-  // Capture the previous route
-  if (from) {
-    router.previousRoute = from;
-  }
-
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (currentUser) {
-      const tokenResult = await currentUser.getIdTokenResult();
-      if (tokenResult && tokenResult.claims && tokenResult.claims.admin) {
-        console.log('User is logged in as an admin now');
-        next();
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+      if (currentUser) {
+        // Check if the user has admin claims
+        const tokenResult = await currentUser.getIdTokenResult();
+        if (tokenResult.claims && tokenResult.claims.admin) {
+          console.log('User is logged in as an admin now');
+          next(); // You should call next() to allow the navigation to proceed
+        } else {
+          console.log('User is not an admin. Redirecting to the login page.');
+          next({ name: 'login' }); // You should call next with an object to redirect
+        }
       } else {
-        next();
+        console.log('User is not logged in. Redirecting to the login page.');
+        next({ name: 'login' }); // You should call next with an object to redirect
       }
     } else {
-      console.log('User is not logged in. Redirecting to the login page.');
-      next({ name: 'login' }); // Redirect to the login page
+      next(); // You should call next() for routes that do not require authentication
     }
-  } else {
-    next();
+  } catch (error) {
+    console.error('Error in navigation guard:', error);
+    next(); // Handle the error and call next() to proceed if needed
   }
 });
+
+
 
 const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
@@ -107,4 +107,5 @@ const getCurrentUser = () => {
     );
   });
 };
+
 export default router;

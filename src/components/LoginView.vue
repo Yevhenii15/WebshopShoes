@@ -11,61 +11,57 @@
       </div>
     </div>
   </template>
- <script setup>
- import { ref } from 'vue';
- import { auth } from '../firebase.js';
- import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
- import router from '../router';
- 
- const email = ref('');
- const password = ref('');
- const errMSG = ref('');
- const adminclaimed = ref(null);
- 
- const logIn = () => {
-   signInWithEmailAndPassword(auth, email.value, password.value)
-     .then(() => {
-       onAuthStateChanged(auth, (user) => {
-         if (user) {
-           user.getIdTokenResult()
-             .then((idTokenResult) => {
-               const claims = idTokenResult.claims;
- 
-               if (claims) {
-                 adminclaimed.value = claims.admin;
-                 if (adminclaimed.value) {
-                   console.log('User is an admin.', claims);
-                   router.push({ name: 'admin' });
-                 } else {
-                   console.log('User is not an admin.');
+<script setup>
+import { ref } from 'vue';
+import { auth } from '../firebase.js';
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import router from '../router';
 
-                   console.log('Previous route:', router.previousRoute);
-                   if (router.previousRoute.name !== 'signup') {
-                     router.push(router.previousRoute.fullPath);
-                   } else {
-                     // If no previous route, go to the default route
-                     router.push({ name: 'home' });
-                   }
-                 }
-               } else {
-                 // Handle the case where 'admin' property is not in claims
-                 console.log('User does not have admin claims.');
-               }
-             })
-             .catch((error) => {
-               console.error('Error getting ID token:', error);
-             });
-         }
-       });
-     })
-     .catch((error) => {
-       console.error('Authentication error:', error);
-     });
- };
- 
- const beforeRouteEnter = (to, from, next) => {
-   router.previousRoute = from; // Capture the previous route
-   next();
- };
- </script>
+const email = ref('');
+const password = ref('');
+const errMSG = ref('');
+const adminClaimed = ref(null);
+
+const logIn = () => {
+  signInWithEmailAndPassword(auth, email.value, password.value)
+    .then(() => {
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          user.getIdTokenResult()
+            .then((idTokenResult) => {
+              const claims = idTokenResult.claims;
+
+              if (claims) {
+                adminClaimed.value = claims.admin;
+                if (adminClaimed.value) {
+                  console.log('User is an admin.', claims);
+                  router.push({ name: 'admin' });
+                } else {
+                  console.log('User is not an admin.');
+
+                  // Check if the previous route exists and is not the 'signup' route
+                  if (router.previousRoute && router.previousRoute.name !== 'signup') {
+                    router.push(router.previousRoute.fullPath);
+                  } else {
+                    // If no previous route, go to the default route
+                    router.push({ name: 'home' });
+                  }
+                }
+              } else {
+                // Handle the case where 'admin' property is not in claims
+                console.log('User does not have admin claims.');
+              }
+            })
+            .catch((error) => {
+              console.error('Error getting ID token:', error);
+            });
+        }
+      });
+    })
+    .catch((error) => {
+      console.error('Authentication error:', error);
+    });
+};
+</script>
+
  

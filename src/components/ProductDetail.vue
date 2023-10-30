@@ -109,6 +109,7 @@
   import { useRoute } from 'vue-router';
   import { doc, getDoc, updateDoc } from 'firebase/firestore';
   import { db, auth } from '../firebase'; // Import your Firebase configuration, including auth
+  import { login } from '../modules/login.js';
   
   export default {
     setup() {
@@ -117,7 +118,7 @@
       const selectedSize = ref('');
       const selectedColor = ref('');
       const selectedProductInStock = ref(null);
-    const variants = ref([]);
+      const variants = ref([]);
 
     const toggleProductInStockDropdown = () => {
       const productInStockOptions = document.getElementById('productInStock-options');
@@ -152,11 +153,15 @@
         selectedColor.value = color;
         toggleColorDropdown();
       };
+      const { isLoggedIn } = login();
 
       const addToCart = async () => {
   if (product.value && selectedSize.value && selectedColor.value && selectedProductInStock.value) {
-    // Get the current user's UID
-    const user = auth.currentUser;
+    // Check if the user is logged in using the `isLoggedIn` variable
+    if (isLoggedIn.value) {
+      // User is authenticated
+      const user = auth.currentUser;
+
 
     if (user) {
       // Create a simplified item to add to the cart
@@ -194,9 +199,15 @@
       console.log('User is not authenticated.');
     }
   } else {
+      // User is not authenticated, display a message or take action
+      alert('Please log in to add items to your cart.');
+      // You can also redirect the user to the login page or show a login modal.
+    }
+  } else {
     console.log("One or more of the required fields is not set.");
   }
 };
+
 
   
   

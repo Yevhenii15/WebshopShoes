@@ -1,24 +1,32 @@
 <template>
-  
-    <TransitionRoot as="template" :show="cart.length > 0">    
-      <Dialog as="div" class="relative z-[1000]" @close="cart = []">
-      <TransitionChild as="template" enter="ease-in-out duration-500" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in-out duration-500" leave-from="opacity-100" leave-to="opacity-0">
+<TransitionRoot as="template" :show="showCart">
+    <Dialog as="div" class="relative z-[1000]"  @click="handleCloseCart">
+      <TransitionChild
+        as="template"
+        enter="ease-in-out duration-500"
+        enter-from="opacity-0 transform translate-y-4"
+        enter-to="opacity-100 transform translate-y-0"
+        leave="ease-in-out duration-500"
+        leave-from="opacity-100 transform translate-y-0"
+        leave-to="opacity-0 transform translate-y-4"
+      >
         <div class="fixed inset-0 bg-white bg-opacity-75 transition-opacity" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
-          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10" ref="cartElement">
             <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
-              <DialogPanel class="pointer-events-auto w-screen max-w-md">
+              <DialogPanel ref="cartPanel" class="pointer-events-auto w-screen max-w-md">
                 <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
                   <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                     <div class="flex items-start justify-between">
                       <DialogTitle class="text-lg font-medium text-gray-900">Shopping Cart</DialogTitle>
                       <div class="ml-3 flex h-7 items-center">
-                        <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500" @click="closeCart">
+                        <!-- Close button in ShoppingCart.vue -->
+                        <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500" @click="$emit('close')">
                           <span class="absolute -inset-0.5" />
-                          <span class="sr-only">Close panel</span>close
+                          <span class="sr-only">Close panel</span>Close
                         </button>
                       </div>
                     </div>
@@ -92,13 +100,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { defineComponent } from 'vue';
+import { useCart } from '../modules/cart.js';
+const { cart, showCart, handleCloseCart } = useCart();
 
-
-const cart = ref([]);
 const totalItems = ref(0);
 const totalPrice = ref(0);
 
@@ -106,9 +112,7 @@ const calculateCartSummary = () => {
   totalItems.value = cart.value.reduce((total, item) => total + item.quantity, 0);
   totalPrice.value = cart.value.reduce((total, item) => total + item.quantity * item.price, 0);
 }
-const closeCart = () => {
-  cart.value = []; // Set cart to an empty array to close the cart
-}
+
 const fetchCart = async () => {
   const user = auth.currentUser;
 
@@ -118,21 +122,29 @@ const fetchCart = async () => {
   }
 
   const userCartRef = doc(db, 'userCarts', user.uid);
-  const userCartSnapshot = await getDoc(userCartRef);
+  try {
+    const userCartSnapshot = await getDoc(userCartRef);
 
-  if (userCartSnapshot.exists()) {
-    const userCartData = userCartSnapshot.data();
+    if (userCartSnapshot.exists()) {
+      const userCartData = userCartSnapshot.data();
 
-    if (userCartData.cart && Array.isArray(userCartData.cart)) {
-      cart.value = userCartData.cart;
-      calculateCartSummary();
+      if (userCartData.cart && Array.isArray(userCartData.cart)) {
+        cart.value = userCartData.cart;
+        calculateCartSummary();
+        console.log('Cart data fetched successfully:', cart.value);
+      } else {
+        console.log('User cart is empty.');
+      }
     } else {
-      console.log('User cart is empty.');
+      console.log('User cart document does not exist.');
     }
-  } else {
-    console.log('User cart document does not exist.');
+  } catch (error) {
+    console.error('Error fetching cart data:', error);
   }
 }
+
+
+
 
 const removeFromCart = async (productId) => {
   // Find the item in the local cart and remove it

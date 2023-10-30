@@ -1,69 +1,17 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref  } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
-import { auth } from './firebase.js';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
 import FooterSection from './components/FooterSection.vue';
 import ShoppingCart from './components/ShoppingCart.vue';
-import router from './router';
+import { useCart } from './modules/cart.js';
+import { login } from './modules/login.js';
 
-const isLoggedIn = ref(false);
-const isAdmin = ref(false);
+const { showCart, cart, toggleCart, handleCloseCart } = useCart();
+const { isLoggedIn, isAdmin, logOut } = login();
+
 const sections = ref([]);
-const showCart = ref(false); // Use ref to create a reactive reference
-const cart = ref([]);
 
-const toggleCart = () => {
-  showCart.value = !showCart.value; // Access .value to update the reactive reference
-};
-const logOut = () => {
-  signOut(auth)
-    .then(() => {
-      console.log('logged out', auth.currentUser);
-      router.push('/login');
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-};
-
-// Create a separate function to check admin status
-const checkAdminStatus = (user) => {
-  if (user) {
-    isLoggedIn.value = true;
-    console.log('logged in', auth.currentUser);
-
-    // Check if the user has admin claims
-    user.getIdTokenResult()
-      .then((idTokenResult) => {
-        const claims = idTokenResult.claims;
-        if (claims && claims.admin) {
-          // User is an admin, set isAdmin to true
-          isAdmin.value = true;
-          console.log('User is an admin of course');
-        } else {
-          // User is not an admin, set isAdmin to false
-          isAdmin.value = false;
-          console.log('User is not an admin of course');
-        }
-      })
-      .catch((error) => {
-        console.error('Error getting ID token:', error);
-      });
-  } else {
-    isLoggedIn.value = false;
-    isAdmin.value = false;
-    console.log('logged out', auth.currentUser);
-  }
-};
-
-onMounted(() => {
-  onAuthStateChanged(auth, (user) => {
-    checkAdminStatus(user);
-  });
-});
 </script>
-
 
 <template>
   <header>
@@ -102,9 +50,8 @@ onMounted(() => {
 
   <RouterView />
   <FooterSection :sections="sections" />
-  <div v-if="showCart">
-    <ShoppingCart :cart="cart" @closeCart="showCart = false" />
-  </div>
+  <ShoppingCart :show="showCart" :cart="cart" @close="handleCloseCart" />
+
 </template>
 
 

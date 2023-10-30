@@ -4,7 +4,6 @@ import { collection, onSnapshot, doc, deleteDoc, addDoc, updateDoc } from 'fireb
 import { uploadBytes, getDownloadURL, getStorage, ref as storageRef , deleteObject} from 'firebase/storage';
 
 
-const uploadedImageUrl = ref('');
 
 const useProducts = () => {
   const uploadImage = async (event) => {
