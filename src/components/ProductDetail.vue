@@ -34,7 +34,7 @@
                 </ul>
               </div>
             </div>
-            <div class="flex flex-col">
+            <div class="flex flex-col mr-[5%]">
               <label for="color" class="text-brownText text-h1 font-montserrat mb-1">Color:</label>
               <div class="relative">
                 <button
@@ -105,20 +105,27 @@
   </template>
   
   <script>
-  import { ref, onMounted } from 'vue';
-  import { useRoute } from 'vue-router';
-  import { doc, getDoc, updateDoc } from 'firebase/firestore';
-  import { db, auth } from '../firebase'; // Import your Firebase configuration, including auth
-  import { login } from '../modules/login.js';
-  
-  export default {
-    setup() {
-      const route = useRoute();
-      const product = ref(null);
-      const selectedSize = ref('');
-      const selectedColor = ref('');
-      const selectedProductInStock = ref(null);
-      const variants = ref([]);
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { db, auth } from '../firebase'; // Import your Firebase configuration, including auth
+import { login } from '../modules/login.js'
+export default {
+  setup() {
+
+    const route = useRoute();
+    const product = ref(null);
+    const selectedSize = ref('');
+    const selectedColor = ref('');
+    const selectedProductInStock = ref(null);
+    const variants = computed(() => {
+      const productInStock = product.value ? product.value.productInStock : 0;
+      if (productInStock > 0) {
+        return Array.from({ length: productInStock }, (_, index) => index + 1);
+      } else {
+        return [];
+      }
+    });
 
     const toggleProductInStockDropdown = () => {
       const productInStockOptions = document.getElementById('productInStock-options');
@@ -133,73 +140,74 @@
     // Generate variants from 1 to 9
     for (let i = 1; i <= 9; i++) {
       variants.value.push(i);
-    }  
-      const toggleSizeDropdown = () => {
-        const sizeOptions = document.getElementById('size-options');
-        sizeOptions.classList.toggle('hidden');
-      };
-      
-      const selectSize = (size) => {
-        selectedSize.value = size;
-        toggleSizeDropdown();
-      };
-  
-      const toggleColorDropdown = () => {
-        const colorOptions = document.getElementById('color-options');
-        colorOptions.classList.toggle('hidden');
-      };
-  
-      const selectColor = (color) => {
-        selectedColor.value = color;
-        toggleColorDropdown();
-      };
-      const { isLoggedIn } = login();
+    }
 
-      const addToCart = async () => {
+    const toggleSizeDropdown = () => {
+      const sizeOptions = document.getElementById('size-options');
+      sizeOptions.classList.toggle('hidden');
+    };
+
+    const selectSize = (size) => {
+      selectedSize.value = size;
+      toggleSizeDropdown();
+    };
+
+    const toggleColorDropdown = () => {
+      const colorOptions = document.getElementById('color-options');
+      colorOptions.classList.toggle('hidden');
+    };
+
+    const selectColor = (color) => {
+      selectedColor.value = color;
+      toggleColorDropdown();
+    };
+
+    const { isLoggedIn } = login();
+    const addToCart = async () => {
   if (product.value && selectedSize.value && selectedColor.value && selectedProductInStock.value) {
     // Check if the user is logged in using the `isLoggedIn` variable
     if (isLoggedIn.value) {
       // User is authenticated
       const user = auth.currentUser;
 
+      if (user) {
+        // Create a simplified item to add to the cart
+        const itemToAdd = {
+          id: product.value.id,             // Product ID
+          name: product.value.productName,  // Product name
+          price: product.value.productPrice, // Product price
+          size: selectedSize.value,         // Selected size
+          color: selectedColor.value,       // Selected color
+          quantity: selectedProductInStock.value, // Selected productInStock
+          inStock: product.value.productInStock, // Product inStock
+          image: product.value.productImages[0], // Product image
+        };
 
-    if (user) {
-      // Create a simplified item to add to the cart
-      const itemToAdd = {
-        id: product.value.id,             // Product ID
-        name: product.value.productName,  // Product name
-        price: product.value.productPrice, // Product price
-        size: selectedSize.value,         // Selected size
-        color: selectedColor.value,       // Selected color
-        quantity: selectedProductInStock.value, // Selected productInStock
-      };
+        // Get the user's cart document from Firestore
+        const userCartRef = doc(db, 'userCarts', user.uid); // Use the UID from the authenticated user
+        const userCartSnapshot = await getDoc(userCartRef);
 
-      // Get the user's cart document from Firestore
-      const userCartRef = doc(db, 'userCarts', user.uid); // Use the UID from the authenticated user
-      const userCartSnapshot = await getDoc(userCartRef);
+        if (userCartSnapshot.exists()) {
+          // If the user has a cart, update it with the new item
+          const userCartData = userCartSnapshot.data();
+          if (!userCartData.cart || !Array.isArray(userCartData.cart)) {
+            // Initialize the cart field as an empty array if it's not already
+            userCartData.cart = [];
+          }
+          userCartData.cart.push(itemToAdd);
 
-      if (userCartSnapshot.exists()) {
-        // If the user has a cart, update it with the new item
-        const userCartData = userCartSnapshot.data();
-        if (!userCartData.cart || !Array.isArray(userCartData.cart)) {
-          // Initialize the cart field as an empty array if it's not already
-          userCartData.cart = [];
+          // Update the user's cart in Firestore
+          await updateDoc(userCartRef, { cart: userCartData.cart });
+
+          alert('Item added to cart!');
+        } else {
+          // Handle the case where the user doesn't have a cart yet
+          console.log('User cart document does not exist.');
         }
-        userCartData.cart.push(itemToAdd);
-
-        // Update the user's cart in Firestore
-        await updateDoc(userCartRef, { cart: userCartData.cart });
-
-        console.log('Item added to the cart:', itemToAdd);
       } else {
-        // Handle the case where the user doesn't have a cart yet
-        console.log('User cart document does not exist.');
+        console.log('User is not authenticated.');
       }
     } else {
-      console.log('User is not authenticated.');
-    }
-  } else {
-      // User is not authenticated, display a message or take action
       alert('Please log in to add items to your cart.');
       // You can also redirect the user to the login page or show a login modal.
     }
@@ -207,6 +215,12 @@
     console.log("One or more of the required fields is not set.");
   }
 };
+
+
+
+
+
+
 
 
   
@@ -231,22 +245,22 @@
         }
       };
   
-      onMounted(fetchProduct);
-  
-      return {
-        product,
-        selectedSize,
-        selectedColor,
-        toggleSizeDropdown,
-        selectSize,
-        toggleColorDropdown,
-        selectColor,
-        addToCart,
-        selectedProductInStock,
-        toggleProductInStockDropdown,
-        selectProductInStock,
-        variants,
-      };
-    },
-  };
-  </script>
+      onMounted(fetchProduct); // Move onMounted inside the setup function
+
+    return {
+      product,
+      selectedSize,
+      selectedColor,
+      toggleSizeDropdown,
+      selectSize,
+      toggleColorDropdown,
+      selectColor,
+      addToCart,
+      selectedProductInStock,
+      toggleProductInStockDropdown,
+      selectProductInStock,
+      variants,
+    };
+  },
+};
+</script>

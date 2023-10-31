@@ -39,8 +39,13 @@ const sections = ref([]);
             <RouterLink to="/about">About us</RouterLink>
           </div>
         </div>
-        <button @click="toggleCart"><img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt=""></button>
-        
+        <button @click="toggleCart"><img src="./images/icons/cart.png" class="w-[40px] h-[40px]" alt="">
+          <span
+            v-if="cart.length"
+            class="absolute top-0 right-0 -mt-1 -mr-1 inline-flex items-center justify-center bg-hovergreen rounded-full h-4 w-4 text-sm text-ghostwhite"
+          >
+            {{ totalCartQuantity }}
+          </span></button>
         </nav>
       </div>
       

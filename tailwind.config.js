@@ -29,6 +29,7 @@ module.exports = {
       backgroundImage: {
         'bg': "url('./images/bg.png')",
         'bg-header': "url('./images/bg-header.png')",
+        'bg-cart': "url('./images/bg-cart.png')",
       },
     }
   },

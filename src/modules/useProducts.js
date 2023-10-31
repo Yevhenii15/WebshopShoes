@@ -92,7 +92,7 @@ const useProducts = () => {
   const addProductData = ref({
     productName: '',
     productPrice: '',
-    productInStock: '',
+    productInStock: 0,
     productSize: [],
     productColor: [],
     productDescription: '',
@@ -151,7 +151,7 @@ const useProducts = () => {
       // Reset other fields and the image URLs
       addProductData.value.productName = '';
       addProductData.value.productPrice = '';
-      addProductData.value.productInStock = '';
+      addProductData.value.productInStock = 0;
       addProductData.value.productSize = [];
       addProductData.value.productColor = [];
       addProductData.value.productDescription = '';
