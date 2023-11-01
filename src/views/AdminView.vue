@@ -73,11 +73,11 @@
             </div>
             <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-2 placeholder:text-brownText"  v-model="product.productDescription" type="text" placeholder="New Product Description">
             <input type="file" @change="addImagesToProduct(product, $event)" multiple class=" text-brownText font-lato rounded-full bg-transparent 
-      file:py-2 file:px-4
-      file:rounded-full file:border-2 file:border-brownText
-      file:bg-transparent file:text-brownText 
-      file:w-[43%] file:mr-3
-      hover:file:bg-beige
+              file:py-2 file:px-4
+              file:rounded-full file:border-2 file:border-brownText
+              file:bg-transparent file:text-brownText 
+              file:w-[43%] file:mr-3
+              hover:file:bg-beige
     ">
 
             </p>
@@ -88,17 +88,69 @@
             <hr>
         </div>
       </div>
-    </div>
-   
+      
+<!-- New section for displaying orders -->
+      <div class="orders bg-[rgba(255,255,255,0.75)] py-[3%] px-[5%] text-brownText font-lato  rounded-[1.25rem]">
+
+            <h2 class="text-[2rem] text-brownText font-lato uppercase text-center my-5">Orders</h2>
+
+            <ul>
+              <li v-for="order in orders" :key="order.id">
+                  <h3>Order ID: {{ order.id }}</h3>
+                  <p>Username: {{ order.username }}</p>
+                  <p>Shipping Address: {{ order.shipping.street }}, {{ order.shipping.town }}, {{ order.shipping.zip }}, {{ order.shipping.country }}</p>
+                  <h4>Ordered Products:</h4>
+
+                  <ul role="list" class=" divide-y divide-gray-200 mb-[3%]">
+                    <li v-for="product in order.products" :key="product.id" class="flex py-6">
+                      <div class="ml-4 flex w-[100%] justify-between">
+                          <div class="flex flex-col justify-between text-base font-p text-brownText">
+                              <h3 class="font-bold">
+                                  {{ product.name }}
+                              </h3>
+                          <p class="mt-1 text-sm text-brownText">Size: <span class="font-montserrat">{{ product.size }}</span></p>
+                          <p class="mt-1 text-sm text-brownText">Color: <span class="font-montserrat">{{ product.color }}</span></p>
+                          <p class="mt-1 text-sm text-brownText">Quantity: <span class="font-montserrat">{{ product.quantity }}</span></p>
+                          </div>
+                          <div class="flex justify-between flex-col">
+                          <p class="ml-4 flex justify-end font-bold text-base font-p text-brownText">{{ product.price * product.quantity }} kr</p>
+                          </div>
+                      </div>
+                    </li>
+                  </ul>
+
+              </li>
+            </ul>
+        </div>
+      </div>   
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue';
   import useProducts from '../modules/useProducts';
+  import { collection, getDocs } from 'firebase/firestore'; // Import Firestore functions
+  import { db } from '../firebase';
+
 
   
   const { products, getProductsData, firebaseDeleteSingleItem, firebaseAddSingleItem, addProductData, firebaseUpdateSingleItem, uploadImage, uploadedImageUrl, deleteImage, addImagesToProduct} = useProducts();
-  
+  const orders = ref([]);
+
+const fetchOrders = async () => {
+  try {
+    // Assuming you have an 'orders' collection in Firestore
+    const ordersCollection = collection(db, 'orders');
+    const snapshot = await getDocs(ordersCollection);
+    orders.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+  }
+};
+
+onMounted(async () => {
+  await getProductsData();
+  await fetchOrders();
+});
   
   
   const addSize = () => {

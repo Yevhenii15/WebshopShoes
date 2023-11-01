@@ -165,38 +165,31 @@ export default {
     const { isLoggedIn } = login();
     const addToCart = async () => {
   if (product.value && selectedSize.value && selectedColor.value && selectedProductInStock.value) {
-    // Check if the user is logged in using the `isLoggedIn` variable
     if (isLoggedIn.value) {
-      // User is authenticated
       const user = auth.currentUser;
 
       if (user) {
-        // Create a simplified item to add to the cart
         const itemToAdd = {
-          id: product.value.id,             // Product ID
-          name: product.value.productName,  // Product name
-          price: product.value.productPrice, // Product price
-          size: selectedSize.value,         // Selected size
-          color: selectedColor.value,       // Selected color
-          quantity: selectedProductInStock.value, // Selected productInStock
-          inStock: product.value.productInStock, // Product inStock
-          image: product.value.productImages[0], // Product image
+          id: product.value.id,
+          name: product.value.productName,
+          price: product.value.productPrice,
+          size: selectedSize.value,
+          color: selectedColor.value,
+          quantity: selectedProductInStock.value,
+          image: product.value.productImages[0],
         };
 
         // Get the user's cart document from Firestore
-        const userCartRef = doc(db, 'userCarts', user.uid); // Use the UID from the authenticated user
+        const userCartRef = doc(db, 'userCarts', user.uid);
         const userCartSnapshot = await getDoc(userCartRef);
 
         if (userCartSnapshot.exists()) {
-          // If the user has a cart, update it with the new item
           const userCartData = userCartSnapshot.data();
           if (!userCartData.cart || !Array.isArray(userCartData.cart)) {
-            // Initialize the cart field as an empty array if it's not already
             userCartData.cart = [];
           }
           userCartData.cart.push(itemToAdd);
 
-          // Update the user's cart in Firestore
           await updateDoc(userCartRef, { cart: userCartData.cart });
 
           alert('Item added to cart!');
@@ -212,7 +205,7 @@ export default {
       // You can also redirect the user to the login page or show a login modal.
     }
   } else {
-    console.log("One or more of the required fields is not set.");
+    alert ("One or more of the required fields is not set.");
   }
 };
 

@@ -5,6 +5,7 @@ import AboutView from '../views/AboutView.vue';
 import SalesView from '../views/SalesView.vue';
 import ShoesView from '../views/ShoesView.vue';
 import ProductDetail from '../components/ProductDetail.vue';
+import CheckoutView from '../views/CheckoutView.vue';
 import AdminView from '../views/AdminView.vue';
 import LoginView from '../components/LoginView.vue'; // Import LoginView
 import SignUpView from '../components/SignUpView.vue'; // Import SignUpView
@@ -40,7 +41,12 @@ const router = createRouter({
     {
       path: '/cart/:id',
       name: 'cart',
-      component: () => import('../components/ShoppingCart.vue'), // Import and use ShoppingCart when needed
+      component: () => import('../components/ShoppingCart.vue'), 
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: CheckoutView,
     },
     {
       path: '/admin',

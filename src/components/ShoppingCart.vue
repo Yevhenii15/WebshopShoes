@@ -23,7 +23,7 @@
                     <div class="flex items-start justify-between">
                       <h1 class="text-h1 text-brownText font-lato">Shopping Cart</h1>
                       <div class="ml-3 flex h-7 items-center">
-                        <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500" @click="$emit('close')">
+                        <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500" @click="close">
                           <span class="absolute -inset-0.5" />
                           <span class="sr-only">Close panel</span><img src="../images/icons/xmark.png" class="w-[2.5vh] h-[2.5vh]" alt="">
                         </button>
@@ -77,14 +77,15 @@
                     </div>
                     <div class="mt-8 flex justify-center">
                       <button
-                        class="border-solid border-2 w-[100%] border-brownText font-lato rounded-full bg-[rgba(255,255,255,0.5)] text-h1 py-2 text-brownText hover:bg-gray-100">
+                        class="border-solid border-2 w-[100%] border-brownText font-lato rounded-full bg-[rgba(255,255,255,0.5)] text-h1 py-2 text-brownText hover:bg-gray-100"
+                        @click="checkout">
                         Checkout
                       </button>                    
                     </div>
                     <div class="mt-4 flex justify-center text-center text-sm text-brownText">
                       <p>
                         or
-                        <button type="button" class="font-semibold text-brownText">
+                        <button type="button" class="font-semibold text-brownText" @click="continueShopping">
                           Continue Shopping
                           <span aria-hidden="true"> &rarr;</span>
                         </button>
@@ -101,109 +102,36 @@
   </TransitionRoot>
 </template>
 <script  setup>
-import { ref, onMounted, watch } from 'vue';
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { doc, getDoc, updateDoc, onSnapshot} from 'firebase/firestore';
-import { db, auth } from '../firebase';
+import { watch } from 'vue';
+import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import {  auth } from '../firebase';
 import { useCart } from '../modules/cart.js';
-const { cart, showCart, handleCloseCart } = useCart();
+import router from '../router';
+const { cart, showCart, handleCloseCart, totalItems,  totalPrice, updateQuantityInFirestore, removeFromCart, fetchCart } = useCart();
+const emit = defineEmits();
 
-const totalItems = ref(0);
-const totalPrice = ref(0);
-
-const calculateCartSummary = () => {
-  totalItems.value = cart.value.reduce((total, item) => total + item.quantity, 0);
-  totalPrice.value = cart.value.reduce((total, item) => total + item.quantity * item.price, 0);
+const close = () => {
+  emit('close');
 }
-const updateQuantityInFirestore = async (productName, size, color, newQuantity) => {
-  // Find the item in the local cart
-  console.log('Updating quantity:', productName, size, color, newQuantity);
-  const updatedItemIndex = cart.value.findIndex((item) =>
-    item.name === productName &&
-    item.size === size &&
-    item.color === color
-  );
-
-  if (updatedItemIndex !== -1) {
-    // Update the local cart
-    cart.value[updatedItemIndex].quantity = newQuantity;
-    calculateCartSummary();
-
-    // Update the Firestore cart
-    const user = auth.currentUser;
-
-    if (user) {
-      const userCartRef = doc(db, 'userCarts', user.uid);
-
-      // Fetch the current cart data from Firestore
-      const userCartSnapshot = await getDoc(userCartRef);
-      if (userCartSnapshot.exists()) {
-        const userCartData = userCartSnapshot.data();
-
-        if (userCartData.cart && Array.isArray(userCartData.cart)) {
-          // Find the item in the Firestore cart and update its quantity
-          const itemToUpdate = userCartData.cart.find((item) =>
-            item.name === productName &&
-            item.size === size &&
-            item.color === color
-          );
-
-          if (itemToUpdate) {
-            itemToUpdate.quantity = newQuantity;
-          }
-
-          // Update the Firestore document with the modified cart
-          await updateDoc(userCartRef, {
-            cart: userCartData.cart,
-          });
-        }
-      }
-    }
+const checkout = () => {
+  close();
+  if (cart.value.length > 0) {
+    router.push({ name: 'checkout' });
+  }
+  else{
+    alert ("Your cart is empty!")
   }
 }
-// Function to fetch the cart
-const fetchCart = async () => {
-  const user = auth.currentUser;
-
-  if (!user) {
-    console.log('User is not authenticated.');
-    return;
-  }
-
-  const userCartRef = doc(db, 'userCarts', user.uid);
-
-  try {
-    // Use onSnapshot to listen for changes in the cart data
-    const unsubscribe = onSnapshot(userCartRef, (doc) => {
-      if (doc.exists()) {
-        const userCartData = doc.data();
-        if (userCartData.cart && Array.isArray(userCartData.cart)) {
-          cart.value = userCartData.cart;
-          calculateCartSummary();
-          console.log('Cart data updated:', cart.value);
-        } else {
-          console.log('User cart is empty.');
-        }
-      } else {
-        console.log('User cart document does not exist.');
-      }
-    });
-
-    // Store the unsubscribe function to stop listening when needed
-    // You can store it in a variable accessible from other parts of your component if necessary.
-  } catch (error) {
-    console.error('Error fetching cart data:', error);
-  }
-}
-
-
+const continueShopping = () => {
+    close();
+    router.push({ name: 'shoes' });
+};
 // Function to handle changes in the user's authentication state
 const handleAuthStateChanged = (user) => {
   if (user) {
     fetchCart();
   }
 }
-
 // Watch for changes in showCart and fetch the cart when it becomes true
 watch(showCart, (newVal) => {
   if (newVal) {
@@ -213,57 +141,5 @@ watch(showCart, (newVal) => {
 
 // Listen for changes in the user's authentication state
 auth.onAuthStateChanged(handleAuthStateChanged);
-
-const removeFromCart = async (productName, size, color, quantity) => {
-  console.log('Removing item:', productName, size, color, quantity);
-  
-  // Find the item in the local cart and log it
-  const removedIndex = cart.value.findIndex((item) =>
-    item.name === productName &&
-    item.size === size &&
-    item.color === color &&
-    item.quantity === quantity
-  );
-  
-  console.log('Removed index:', removedIndex);
-
-  if (removedIndex !== -1) {
-    console.log('Removing item from the local cart:', cart.value[removedIndex]);
-    cart.value.splice(removedIndex, 1);
-    calculateCartSummary();
-  }
-
-  // Now, update the cart in Firestore
-  const user = auth.currentUser;
-
-  if (user) {
-    const userCartRef = doc(db, 'userCarts', user.uid);
-
-    // Fetch the current cart data from Firestore
-    const userCartSnapshot = await getDoc(userCartRef);
-    if (userCartSnapshot.exists()) {
-      const userCartData = userCartSnapshot.data();
-
-      if (userCartData.cart && Array.isArray(userCartData.cart)) {
-        // Filter out the removed item by its name, size, color, and quantity
-        userCartData.cart = userCartData.cart.filter((item) =>
-          item.name !== productName ||
-          item.size !== size ||
-          item.color !== color ||
-          item.quantity !== quantity
-        );
-
-        console.log('Updated Firestore cart:', userCartData.cart);
-
-        // Update the Firestore document with the modified cart
-        await updateDoc(userCartRef, {
-          cart: userCartData.cart,
-        });
-      }
-    }
-  }
-}
-
-
 
 </script>
