@@ -2,13 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import HomeView from '../views/HomeView.vue';
 import AboutView from '../views/AboutView.vue';
-import SalesView from '../views/SalesView.vue';
 import ShoesView from '../views/ShoesView.vue';
 import ProductDetail from '../components/ProductDetail.vue';
 import CheckoutView from '../views/CheckoutView.vue';
 import AdminView from '../views/AdminView.vue';
-import LoginView from '../components/LoginView.vue'; // Import LoginView
-import SignUpView from '../components/SignUpView.vue'; // Import SignUpView
+import LoginView from '../components/LoginView.vue'; 
+import SignUpView from '../components/SignUpView.vue'; 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,11 +21,6 @@ const router = createRouter({
       path: '/about',
       name: 'about',
       component: AboutView,
-    },
-    {
-      path: '/sales',
-      name: 'sales',
-      component: SalesView,
     },
     {
       path: '/shoes',
@@ -72,7 +66,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   try {
-    // Here, you should obtain the current user using Firebase Authentication
+    //Get the current user using Firebase Authentication
     const currentUser = getAuth().currentUser; // Get the current user directly
 
     if (to.matched.some((record) => record.meta.requiresAuth)) {
@@ -80,18 +74,18 @@ router.beforeEach(async (to, from, next) => {
         // Check if the user has admin claims
         const tokenResult = await currentUser.getIdTokenResult();
         if (tokenResult.claims && tokenResult.claims.admin) {
-          console.log('User is logged in as an admin now');
-          next(); // You should call next() to allow the navigation to proceed
+          // User is logged in as an admin now
+          next(); // Allow the navigation to proceed
         } else {
-          console.log('User is not an admin. Redirecting to the login page.');
-          next({ name: 'login' }); // You should call next with an object to redirect
+          // User is not an admin. Redirecting to the login page.
+          next({ name: 'login' }); // Redirect to login
         }
       } else {
-        console.log('User is not logged in. Redirecting to the login page.');
-        next({ name: 'login' }); // You should call next with an object to redirect
+        // User is not logged in. 
+        next({ name: 'login' }); // Redirecting to the login page.
       }
     } else {
-      next(); // You should call next() for routes that do not require authentication
+      next(); // Allow the navigation to proceed
     }
   } catch (error) {
     console.error('Error in navigation guard:', error);
@@ -99,9 +93,7 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-
-
-const getCurrentUser = () => {
+/* const getCurrentUser = () => {
   return new Promise((resolve, reject) => {
     const unsubscribe = onAuthStateChanged(
       getAuth(),
@@ -112,6 +104,6 @@ const getCurrentUser = () => {
       reject
     );
   });
-};
+}; */
 
 export default router;

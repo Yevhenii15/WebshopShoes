@@ -1,7 +1,7 @@
 <template>
     <div class="checkout bg-bg bg-auto bg-top px-[20%] py-[3rem] w-[100%]">
         
-      <div class="bg-[#daad8994] py-[3%] px-[5%] text-brownText font-lato  rounded-[1.25rem]">
+      <div class="bg-[#daad8994] py-[3%] px-[5%] text-brownText relative z-20 font-lato rounded-[1.25rem]">
 
         <h1 class="text-h1-lg text-center mb-5">Checkout</h1>
         <h2 class="text-h1 ">Products:</h2>
@@ -98,6 +98,10 @@ const placeOrder = async () => {
       return; // Exit the function
     }
 
+    for (const item of validCartItems) {
+      await removeFromCart(item.name, item.size, item.color, item.quantity);
+    }
+
     const orderData = {
       username,
       shipping: shippingAddress.value,
@@ -115,11 +119,6 @@ const placeOrder = async () => {
     const ordersRef = collection(db, 'orders');
     await addDoc(ordersRef, orderData);
 
-    // You can clear the cart or perform other necessary actions
-    // For example, to clear the cart:
-    for (const item of validCartItems) {
-      removeFromCart(item.name, item.price, item.size, item.color, item.quantity);
-    }
     alert('Your order has been placed.');
     router.push({ name: 'home' });
   } else {
@@ -127,6 +126,7 @@ const placeOrder = async () => {
     // You can also redirect the user to the login page or show a login modal.
   }
 };
+
 
 
 const handleAuthStateChanged = (user) => {

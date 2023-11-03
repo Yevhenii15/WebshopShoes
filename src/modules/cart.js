@@ -1,7 +1,7 @@
 // cart.js
 import { ref, } from 'vue';
 import { login } from './login'; // Import the login function from the appropriate location
-import { getDoc, updateDoc } from 'firebase/firestore';
+import { getDoc, updateDoc, getFirestore, runTransaction } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { doc, onSnapshot} from 'firebase/firestore';
 export function useCart() {
@@ -78,54 +78,53 @@ export function useCart() {
     }
   }
   const removeFromCart = async (productName, size, color, quantity) => {
-    console.log('Removing item:', productName, size, color, quantity);
-    
-    // Find the item in the local cart and log it
+    const db = getFirestore();
+  
+    // Find the item in the local cart and remove it
     const removedIndex = cart.value.findIndex((item) =>
       item.name === productName &&
       item.size === size &&
       item.color === color &&
       item.quantity === quantity
     );
-    
-    console.log('Removed index:', removedIndex);
   
     if (removedIndex !== -1) {
-      console.log('Removing item from the local cart:', cart.value[removedIndex]);
       cart.value.splice(removedIndex, 1);
       calculateCartSummary();
     }
   
-    // Now, update the cart in Firestore
+    // Now, update the cart in Firestore within a transaction
     const user = auth.currentUser;
   
     if (user) {
       const userCartRef = doc(db, 'userCarts', user.uid);
   
-      // Fetch the current cart data from Firestore
-      const userCartSnapshot = await getDoc(userCartRef);
-      if (userCartSnapshot.exists()) {
-        const userCartData = userCartSnapshot.data();
+      try {
+        await runTransaction(db, async (transaction) => {
+          const userCartSnapshot = await transaction.get(userCartRef);
   
-        if (userCartData.cart && Array.isArray(userCartData.cart)) {
-          // Filter out the removed item by its name, size, color, and quantity
-          userCartData.cart = userCartData.cart.filter((item) =>
-            item.name !== productName ||
-            item.size !== size ||
-            item.color !== color ||
-            item.quantity !== quantity
-          );
+          if (userCartSnapshot.exists()) {
+            const userCartData = userCartSnapshot.data();
   
-          console.log('Updated Firestore cart:', userCartData.cart);
+            if (userCartData.cart && Array.isArray(userCartData.cart)) {
+              // Filter out the removed item by its name, size, color, and quantity
+              userCartData.cart = userCartData.cart.filter((item) =>
+                item.name !== productName ||
+                item.size !== size ||
+                item.color !== color ||
+                item.quantity !== quantity
+              );
   
-          // Update the Firestore document with the modified cart
-          await updateDoc(userCartRef, {
-            cart: userCartData.cart,
-          });
-        }
+              // Update the Firestore document with the modified cart
+              transaction.update(userCartRef, { cart: userCartData.cart });
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error removing item from cart in Firestore:', error);
       }
     }
-  }
+  };
   const fetchCart = async () => {
     const user = auth.currentUser;
   

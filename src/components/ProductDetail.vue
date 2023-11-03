@@ -1,10 +1,16 @@
 <template>
-    <div class="product-detail bg-bg bg-auto bg-top pb-[5rem] w-[100%]">
-      <div class=" flex relative z-20 " v-if="product">
-        <div class="relative w-[50%] flex justify-center items-center">
-          <img class="relative object-cover" src="../images/product-bg.png" alt="">
-          <img class="absolute w-[41%] h-[42vh] object-cover object-center" :src="product.productImages[0]" :alt="product.productName" />
+      <div class="product-detail bg-bg bg-auto bg-top pb-[5rem] w-[100%]">
+    <div class="flex relative z-20" v-if="product">
+      <div class="relative w-[50%] flex justify-center items-center bg-bg-product  bg-no-repeat	bg-contain		">
+        <div class="w-full h-[55vh] flex justify-center items-center ">
+          <swiper class=" w-[41%] relative top-[-7.5%] flex justify-center" :modules="modules" :pagination="{ clickable: true }" :autoplay="{ delay: 2500, disableOnInteraction: false }">
+            <swiper-slide class="flex justify-center" v-for="(image, index) in product.productImages" :key="index">
+              <img class="w-[100%] h-[42vh] object-cover object-center" :src="image" :alt="product.productName" />
+            </swiper-slide>
+          </swiper>
         </div>
+      </div>
+        
         <div class="w-[50%] py-[5%]">
           <h1 class="text-h1-lg text-brownText font-lato mb-1">{{ product.productName }}</h1>
           <p class="font-montserrat text-h1 text-brownText mb-1">Price: <br> <span class="font-lato">{{ product.productPrice }} kr</span></p>
@@ -110,8 +116,26 @@ import { useRoute } from 'vue-router';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase'; // Import your Firebase configuration, including auth
 import { login } from '../modules/login.js'
+
+
+// Import necessary libraries and components for Swiper
+import SwiperClass, { Pagination, Autoplay } from 'swiper'
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+
+// Import CSS styles for Swiper and its Pagination component
+import 'swiper/css'
+import 'swiper/css/pagination'
+
+
 export default {
+  components: {
+    Swiper,
+    SwiperSlide
+  },
   setup() {
+// Configure and use Swiper plugins
+SwiperClass.use([Pagination, Autoplay])
+
 
     const route = useRoute();
     const product = ref(null);
@@ -209,36 +233,27 @@ export default {
   }
 };
 
+const fetchProduct = async () => {
+      const productId = route.params.id;
 
+      try {
+        const productDoc = doc(db, 'products', productId);
+        const productSnapshot = await getDoc(productDoc);
 
-
-
-
-
-
-  
-  
-      const fetchProduct = async () => {
-        const productId = route.params.id;
-  
-        try {
-          const productDoc = doc(db, 'products', productId);
-          const productSnapshot = await getDoc(productDoc);
-  
-          if (productSnapshot.exists()) {
-            product.value = {
-              id: productSnapshot.id,
-              ...productSnapshot.data(),
-            };
-          } else {
-            console.log('No such document!');
-          }
-        } catch (error) {
-          console.error('Error fetching product:', error);
+        if (productSnapshot.exists()) {
+          product.value = {
+            id: productSnapshot.id,
+            ...productSnapshot.data(),
+          };
+        } else {
+          console.log('No such document!');
         }
-      };
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
   
-      onMounted(fetchProduct); // Move onMounted inside the setup function
+    onMounted(fetchProduct); // Move onMounted inside the setup function
 
     return {
       product,
@@ -253,6 +268,8 @@ export default {
       toggleProductInStockDropdown,
       selectProductInStock,
       variants,
+      modules: [Pagination, Autoplay]
+
     };
   },
 };

@@ -1,5 +1,6 @@
 <template>
     <div class="admin bg-bg bg-auto bg-top px-[8%] pb-[5rem] flex w-[100%] flex-wrap">
+      <!-- Looping to display products -->
       <div class="w-[50%] relative z-20" v-for="product in products" :key="product.id">
         <router-link :to="'/product/' + product.id">
           <div class="relative flex justify-center items-center">
@@ -22,8 +23,10 @@
   
   export default {
     setup() {
+      // Define a products array
       const products = ref([]);
-  
+
+      // Fetch products from Firestore
       const fetchProducts = async () => {
         try {
           const querySnapshot = await getDocs(collection(db, 'products'));

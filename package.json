@@ -13,7 +13,9 @@
     "@headlessui/vue": "^1.7.16",
     "express": "^4.18.2",
     "firebase": "^10.3.1",
+    "swiper": "^8.4.7",
     "vue": "^3.3.4",
+    "vue-awesome-swiper": "^5.0.1",
     "vue-router": "^4.2.4",
     "vue-transition": "^0.1.3"
   },
