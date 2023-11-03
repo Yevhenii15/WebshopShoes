@@ -1,11 +1,10 @@
 <template>
     <div class="checkout bg-bg bg-auto bg-top px-[20%] py-[3rem] w-[100%]">
-        
-      <div class="bg-[#daad8994] py-[3%] px-[5%] text-brownText relative z-20 font-lato rounded-[1.25rem]">
-
+      <div class="bg-[#daad8994] py-[3%] px-[5%] text-brownText relative z-[70] font-lato rounded-[1.25rem]">
+        <!-- Checkout -->
         <h1 class="text-h1-lg text-center mb-5">Checkout</h1>
         <h2 class="text-h1 ">Products:</h2>
-
+        <!-- Products -->
         <ul role="list" class=" divide-y divide-gray-200 mb-[3%]">
           <li v-for="item in cart" :key="item.id" class="flex py-6">
             <div class="flex-shrink-0 relative">
@@ -30,7 +29,7 @@
         <h2 class="text-h1 mb-[1%]">Shipping address:</h2>
         <h3 class=" font-montserrat mb-[1%]">(Shipping is free)</h3>
 
-
+        <!-- Input for adress -->
         <div>
             <input v-model="shippingAddress.street" class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-[100%] py-1 px-6 mb-5 placeholder:text-brownText" type="text" placeholder="Street and number of house or appartment">
             <input v-model="shippingAddress.town" class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-[50%] py-1 px-6 mb-5 placeholder:text-brownText" type="text" placeholder="Town">
@@ -50,12 +49,12 @@
         </div>
 
         <h2 class="text-h1 mt-[2%]">Payment:</h2>
-
+        <!-- Payment -->
         <p class="font-montserrat">
             You can pay with credit card. You should receive an email with the confirmation of your order.
             And in it you will find the details of the payment. Delivery time is 3-5 working days.
         </p>
-
+        <!-- Order -->
         <div class="flex justify-center mt-[3%]">
             <button
                 class="border-solid border-2 border-brownText font-lato rounded-full bg-[rgba(255,255,255,0.5)] text-[1.6rem] py-2 px-[10%] text-brownText hover:bg-gray-100"
@@ -74,15 +73,16 @@ import {  auth, db } from '../firebase';
 import { collection, addDoc } from 'firebase/firestore'; // Import Firestore functions
 import { useCart } from '../modules/cart.js';
 import router from '../router';
-const { cart, showCart, handleCloseCart, totalItems,  totalPrice, updateQuantityInFirestore, removeFromCart, fetchCart } = useCart();
+const { cart, showCart, totalItems,  totalPrice, removeFromCart, fetchCart } = useCart();
 
+// Create a shippingAddress ref
 const shippingAddress = ref({
   street: '',
   town: '',
   zip: '',
   country: '',
 });
-
+// Create a placeOrder function
 const placeOrder = async () => {
   if (auth.currentUser) {
     const username = auth.currentUser.email;
@@ -127,8 +127,7 @@ const placeOrder = async () => {
   }
 };
 
-
-
+// Function to handle changes in the user's authentication state
 const handleAuthStateChanged = (user) => {
   if (user) {
     fetchCart();

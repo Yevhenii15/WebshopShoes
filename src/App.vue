@@ -36,11 +36,11 @@ const sections = ref([]);
             </div>
 
             <RouterLink v-if="!isLoggedIn" to="/login">Login</RouterLink>
-            <RouterLink v-if="!isLoggedIn" to="/signup">Sign Up</RouterLink>
-            <button @click="logOut" v-if="isLoggedIn">Log Out</button>
-
-            <div class="border-solid border-2 border-brownText rounded-full py-2 px-6">
-              <RouterLink to="/about">About us</RouterLink>
+            <div v-if="isLoggedIn" class="border-solid border-2 border-brownText rounded-full py-2 px-6">
+              <button @click="logOut" v-if="isLoggedIn">Log Out</button>
+            </div>
+            <div v-if="!isLoggedIn" class="border-solid border-2 border-brownText rounded-full py-2 px-6">
+              <RouterLink v-if="!isLoggedIn" to="/signup">Sign Up</RouterLink>
             </div>
           
           </div>
@@ -63,22 +63,22 @@ const sections = ref([]);
 <style scoped>
 /* Just style for different logged in users */
 .logged-in-navbar-as-admin {
-  width: 37%; 
+  width: 30%; 
 }
 .logged-in-div-as-admin{
-width: 77%;
+width: 70%;
 }
 .logged-in {
-  width: 30%;
+  width: 21%;
 }
 .logged-out{
-  width: 35%;
+  width: 28%;
 }
 .logged-in-div {
-  width: 73%;
+  width: 68%;
 }
 .logged-out-div{
-  width: 75%;
+  width: 70%;
 }
 
 </style>

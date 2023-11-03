@@ -1,5 +1,6 @@
 <template>
     <div class="admin bg-bg bg-auto bg-top px-[8%] py-[5rem]">
+      <div class="relative z-[51]">
       <!-- Title for section -->
       <h1 class="text-[2rem] text-brownText font-lato uppercase text-center mb-5">Add new product</h1>
       <!-- Form for adding new product -->
@@ -136,7 +137,8 @@
               </li>
             </ul>
         </div>
-      </div>   
+      </div>
+    </div>   
   </template>
   
 <script setup>

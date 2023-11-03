@@ -1,7 +1,7 @@
 <template>
     <div class="admin bg-bg bg-auto bg-top px-[8%] pb-[5rem] flex w-[100%] flex-wrap">
       <!-- Looping to display products -->
-      <div class="w-[50%] relative z-20" v-for="product in products" :key="product.id">
+      <div class="w-[50%] relative z-[100]" v-for="product in products" :key="product.id">
         <router-link :to="'/product/' + product.id">
           <div class="relative flex justify-center items-center">
             <img class=" relative object-cover" src="../images/product-bg.png" alt="">
@@ -17,32 +17,15 @@
   </template>
   
   <script>
-  import { ref, onMounted } from 'vue';
-  import { collection, getDocs } from 'firebase/firestore';
-  import { db } from '../firebase'; // Import your Firebase configuration
+  import { onMounted } from 'vue';
+  // Importing the fetchProducts function from the showProduct module
+  import { fetchProducts } from '../modules/showProduct.js';
   
   export default {
     setup() {
-      // Define a products array
-      const products = ref([]);
-
-      // Fetch products from Firestore
-      const fetchProducts = async () => {
-        try {
-          const querySnapshot = await getDocs(collection(db, 'products'));
-          const productsData = [];
+      const { products, fetchData } = fetchProducts();
   
-          querySnapshot.forEach((doc) => {
-            productsData.push({ id: doc.id, ...doc.data() });
-          });
-  
-          products.value = productsData;
-        } catch (error) {
-          console.error('Error fetching products:', error);
-        }
-      };
-  
-      onMounted(fetchProducts);
+      onMounted(fetchData);
   
       return {
         products,

@@ -1,131 +1,130 @@
 <template>
       <div class="product-detail bg-bg bg-auto bg-top pb-[5rem] w-[100%]">
-    <div class="flex relative z-20" v-if="product">
-      <div class="relative w-[50%] flex justify-center items-center bg-bg-product  bg-no-repeat	bg-contain		">
-        <div class="w-full h-[55vh] flex justify-center items-center ">
-          <swiper class=" w-[41%] relative top-[-7.5%] flex justify-center" :modules="modules" :pagination="{ clickable: true }" :autoplay="{ delay: 2500, disableOnInteraction: false }">
-            <swiper-slide class="flex justify-center" v-for="(image, index) in product.productImages" :key="index">
-              <img class="w-[100%] h-[42vh] object-cover object-center" :src="image" :alt="product.productName" />
-            </swiper-slide>
-          </swiper>
-        </div>
-      </div>
-        
-        <div class="w-[50%] py-[5%]">
-          <h1 class="text-h1-lg text-brownText font-lato mb-1">{{ product.productName }}</h1>
-          <p class="font-montserrat text-h1 text-brownText mb-1">Price: <br> <span class="font-lato">{{ product.productPrice }} kr</span></p>
-          <div class="flex">
-            <div class="flex flex-col mr-[5%]">
-              <label for="size" class="text-brownText text-h1 font-montserrat mb-1">Size:</label>
-              <div class="relative">
-                <button
-                  id="size-dropdown"
-                  class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
-                  @click="toggleSizeDropdown"
-                >
-                  {{ selectedSize || 'Select Size' }}
-                </button>
-                <ul
-                  id="size-options"
-                  class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                >
-                  <li
-                    v-for="size in product.productSize"
-                    :key="size"
-                    class="px-4 py-2 text-sm text-brownText hover:bg-gray-100 cursor-pointer"
-                    @click="selectSize(size)"
-                  >
-                    {{ size }}
-                  </li>
-                </ul>
-              </div>
+        <!-- Looping product -->
+        <div class="flex" v-if="product">
+          <div class="relative w-[50%] flex justify-center items-center bg-bg-product  bg-no-repeat	bg-contain		">
+            <div class="w-full h-[55vh] flex justify-center items-center ">
+              <!-- Slider -->
+              <swiper class=" w-[41%] relative top-[-7.5%] flex justify-center" :modules="modules" :pagination="{ clickable: true }" :autoplay="{ delay: 2500, disableOnInteraction: false }">
+                <swiper-slide class="flex justify-center" v-for="(image, index) in product.productImages" :key="index">
+                  <img class="w-[100%] h-[42vh] object-cover object-center" :src="image" :alt="product.productName" />
+                </swiper-slide>
+              </swiper>
             </div>
-            <div class="flex flex-col mr-[5%]">
-              <label for="color" class="text-brownText text-h1 font-montserrat mb-1">Color:</label>
-              <div class="relative">
-                <button
-                  id="color-dropdown"
-                  class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
-                  @click="toggleColorDropdown"
-                >
-                  {{ selectedColor || 'Select Color' }}
-                </button>
-                <ul
-                  id="color-options"
-                  class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                >
-                  <li
-                    v-for="color in product.productColor"
-                    :key="color"
-                    class="px-4 py-2 text-sm text-brownText hover-bg-gray-100 cursor-pointer"
-                    @click="selectColor(color)"
-                  >
-                    {{ color }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="flex flex-col">
-              <label for="productInStock" class="text-brownText text-h1 font-montserrat mb-1">Product In Stock:</label>
-              <div class="relative">
-                <button
-                  id="productInStock-dropdown"
-                  class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
-                  @click="toggleProductInStockDropdown"
-                >
-                  {{ selectedProductInStock || 'Select Quantity' }}
-                </button>
-                <ul
-                  id="productInStock-options"
-                  class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                >
-                  <li
-                    v-for="variant in variants"
-                    :key="variant"
-                    class="px-4 py-2 text-sm text-brownText hover-bg-gray-100 cursor-pointer"
-                    @click="selectProductInStock(variant)"
-                  >
-                    {{ variant }}
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-
-
           </div>
-          
-          <p class="w-[40%] text-brownText font-montserrat text-h1 mb-1">Description: </p>
-          <p class="w-[40%] text-brownText font-montserrat text-p mb-3">{{ product.productDescription }}</p>
-          <button
-            class="border-solid border-2 border-brownText font-lato rounded-full bg-[rgba(255,255,255,0.5)] text-[1.6rem] py-2 px-6 text-brownText hover:bg-gray-100"
-            @click="addToCart">
-            Add to Cart
-          </button>
+        
+          <div class="w-[50%] py-[5%]">
+            <h1 class="text-h1-lg text-brownText font-lato mb-1">{{ product.productName }}</h1>
+            <p class="font-montserrat text-h1 text-brownText mb-1">Price: <br> <span class="font-lato">{{ product.productPrice }} kr</span></p>
+            <div class="flex">
+              <!-- Choose size -->
+              <div class="flex flex-col mr-[5%]">
+                <label for="size" class="text-brownText text-h1 font-montserrat mb-1">Size:</label>
+                <div class="relative">
+                  <button
+                    id="size-dropdown"
+                    class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
+                    @click="toggleSizeDropdown"
+                  >
+                    {{ selectedSize || 'Select Size' }}
+                  </button>
+                  <ul
+                    id="size-options"
+                    class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                  >
+                    <li
+                      v-for="size in product.productSize"
+                      :key="size"
+                      class="px-4 py-2 text-sm text-brownText hover:bg-gray-100 cursor-pointer"
+                      @click="selectSize(size)"
+                    >
+                      {{ size }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- Choose color -->
+              <div class="flex flex-col mr-[5%]">
+                <label for="color" class="text-brownText text-h1 font-montserrat mb-1">Color:</label>
+                <div class="relative">
+                  <button
+                    id="color-dropdown"
+                    class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
+                    @click="toggleColorDropdown"
+                  >
+                    {{ selectedColor || 'Select Color' }}
+                  </button>
+                  <ul
+                    id="color-options"
+                    class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                  >
+                    <li
+                      v-for="color in product.productColor"
+                      :key="color"
+                      class="px-4 py-2 text-sm text-brownText hover-bg-gray-100 cursor-pointer"
+                      @click="selectColor(color)"
+                    >
+                      {{ color }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <!-- Choose quantity -->
+              <div class="flex flex-col">
+                <label for="productInStock" class="text-brownText text-h1 font-montserrat mb-1">Product In Stock:</label>
+                <div class="relative">
+                  <button
+                    id="productInStock-dropdown"
+                    class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-3 text-brownText placeholder-text-brownText"
+                    @click="toggleProductInStockDropdown"
+                  >
+                    {{ selectedProductInStock || 'Select Quantity' }}
+                  </button>
+                  <ul
+                    id="productInStock-options"
+                    class="hidden absolute z-10 py-2 w-[100%] rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                  >
+                    <li
+                      v-for="variant in variants"
+                      :key="variant"
+                      class="px-4 py-2 text-sm text-brownText hover-bg-gray-100 cursor-pointer"
+                      @click="selectProductInStock(variant)"
+                    >
+                      {{ variant }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <p class="w-[40%] text-brownText font-montserrat text-h1 mb-1">Description: </p>
+            <p class="w-[40%] text-brownText font-montserrat text-p mb-3">{{ product.productDescription }}</p>
+            <button
+              class="relative z-[51] border-solid border-2 border-brownText font-lato rounded-full bg-[rgba(255,255,255,0.5)] text-[1.6rem] py-2 px-6 text-brownText hover:bg-gray-100"
+              @click="addToCart">
+              Add to Cart
+            </button>
+          </div>
         </div>
-      </div>
       <div v-else>
-        <p>Loading...</p>
-      </div>
-    </div>
-  </template>
+   <p>Loading...</p>
+  </div>
+ </div>
+</template>
   
   <script>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '../firebase'; // Import your Firebase configuration, including auth
-import { login } from '../modules/login.js'
-
-
+import { doc, getDoc,  updateDoc } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import { login } from '../modules/login.js';
+import { fetchProducts } from '../modules/showProduct.js'; // Import fetchData from showProduct.js
 // Import necessary libraries and components for Swiper
-import SwiperClass, { Pagination, Autoplay } from 'swiper'
-import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
+import SwiperClass, { Pagination, Autoplay } from 'swiper';
+import { Swiper, SwiperSlide } from 'vue-awesome-swiper';
 
 // Import CSS styles for Swiper and its Pagination component
-import 'swiper/css'
-import 'swiper/css/pagination'
-
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 export default {
   components: {
@@ -133,15 +132,21 @@ export default {
     SwiperSlide
   },
   setup() {
-// Configure and use Swiper plugins
-SwiperClass.use([Pagination, Autoplay])
-
-
+    // Configure and use Swiper plugins
+    SwiperClass.use([Pagination, Autoplay]);
+    // Use the useRoute() function to get the current route
     const route = useRoute();
+    // Create a reference to the product object
     const product = ref(null);
+    const { isLoggedIn } = login();
+    const { fetchData } = fetchProducts();
+    // Use the useAddToCart() function to get the selected size and color
+    // Create a reference to the selected quantity
+    const selectedProductInStock = ref(null);
     const selectedSize = ref('');
     const selectedColor = ref('');
-    const selectedProductInStock = ref(null);
+
+    // Create a computed property to get the variants
     const variants = computed(() => {
       const productInStock = product.value ? product.value.productInStock : 0;
       if (productInStock > 0) {
@@ -150,110 +155,122 @@ SwiperClass.use([Pagination, Autoplay])
         return [];
       }
     });
-
-    const toggleProductInStockDropdown = () => {
-      const productInStockOptions = document.getElementById('productInStock-options');
-      productInStockOptions.classList.toggle('hidden');
+    // Create a function to toggle the option
+    const toggleDropdown = (dropdownId) => {
+      const dropdown = document.getElementById(dropdownId);
+      dropdown.classList.toggle('hidden');
     };
-
-    const selectProductInStock = (variant) => {
-      selectedProductInStock.value = variant;
-      toggleProductInStockDropdown();
+    // Create a function to select the option
+    const selectOption = (option, selectedValue, dropdownId, toggleDropdownFn) => {
+      selectedValue.value = option;
+      toggleDropdownFn(dropdownId);
     };
-
-    // Generate variants from 1 to 9
-    for (let i = 1; i <= 9; i++) {
-      variants.value.push(i);
-    }
-
+    // Define functions to toggle and select the size, color, and quantity
     const toggleSizeDropdown = () => {
-      const sizeOptions = document.getElementById('size-options');
-      sizeOptions.classList.toggle('hidden');
+      toggleDropdown('size-options');
     };
 
     const selectSize = (size) => {
-      selectedSize.value = size;
-      toggleSizeDropdown();
+      selectOption(size, selectedSize, 'size-options', toggleSizeDropdown);
     };
 
     const toggleColorDropdown = () => {
-      const colorOptions = document.getElementById('color-options');
-      colorOptions.classList.toggle('hidden');
+      toggleDropdown('color-options');
     };
 
     const selectColor = (color) => {
-      selectedColor.value = color;
-      toggleColorDropdown();
+      selectOption(color, selectedColor, 'color-options', toggleColorDropdown);
     };
 
-    const { isLoggedIn } = login();
+    const toggleProductInStockDropdown = () => {
+      toggleDropdown('productInStock-options');
+    };
+
+    const selectProductInStock = (variant) => {
+      selectOption(variant, selectedProductInStock, 'productInStock-options', toggleProductInStockDropdown);
+    };
+    // Create a function to add the item to the cart
     const addToCart = async () => {
-  if (product.value && selectedSize.value && selectedColor.value && selectedProductInStock.value) {
-    if (isLoggedIn.value) {
-      const user = auth.currentUser;
+    // Check if the required fields are set
+    if (
+      product.value &&
+      selectedSize.value &&
+      selectedColor.value &&
+      selectedProductInStock.value !== null
+    ) {
+      // The quantity is not null, and it's been selected.
+      // Proceed with adding the item to the cart.
+      // Check if the user is logged in
+      if (isLoggedIn.value) {
+        const user = auth.currentUser;
+        if (user) {
+          // The user is logged in.
+          // Proceed with adding the item to the cart.
+          const itemToAdd = {
+            id: product.value.id,
+            name: product.value.productName,
+            price: product.value.productPrice,
+            size: selectedSize.value,
+            color: selectedColor.value,
+            quantity: selectedProductInStock.value,
+            image: product.value.productImages[0],
+          };
+          // Create a reference to the user cart document
+          const userCartRef = doc(db, 'userCarts', user.uid);
+          const userCartSnapshot = await getDoc(userCartRef);
+          // Check if the user cart document exists
+          if (userCartSnapshot.exists()) {
+            const userCartData = userCartSnapshot.data();
+            // Check if the cart property exists and is an array
+            if (!userCartData.cart || !Array.isArray(userCartData.cart)) {
+              userCartData.cart = [];
+            }
+            // Add the item to the cart
+            userCartData.cart.push(itemToAdd);
+            // Update the user cart document
+            await updateDoc(userCartRef, { cart: userCartData.cart });
 
-      if (user) {
-        const itemToAdd = {
-          id: product.value.id,
-          name: product.value.productName,
-          price: product.value.productPrice,
-          size: selectedSize.value,
-          color: selectedColor.value,
-          quantity: selectedProductInStock.value,
-          image: product.value.productImages[0],
-        };
-
-        // Get the user's cart document from Firestore
-        const userCartRef = doc(db, 'userCarts', user.uid);
-        const userCartSnapshot = await getDoc(userCartRef);
-
-        if (userCartSnapshot.exists()) {
-          const userCartData = userCartSnapshot.data();
-          if (!userCartData.cart || !Array.isArray(userCartData.cart)) {
-            userCartData.cart = [];
+            alert('Item added to cart!');
+          } else {
+            // console.log('User cart document does not exist.');
           }
-          userCartData.cart.push(itemToAdd);
-
-          await updateDoc(userCartRef, { cart: userCartData.cart });
-
-          alert('Item added to cart!');
         } else {
-          // Handle the case where the user doesn't have a cart yet
-          console.log('User cart document does not exist.');
+          // console.log('User is not authenticated.');
         }
       } else {
-        console.log('User is not authenticated.');
+        alert('Please log in to add items to your cart.');
       }
     } else {
-      alert('Please log in to add items to your cart.');
-      // You can also redirect the user to the login page or show a login modal.
+      alert('One or more of the required fields is not set.');
     }
-  } else {
-    alert ("One or more of the required fields is not set.");
-  }
-};
+  };
+  // Create a function to fetch the product
+  const fetchProduct = async () => {
+    // Get the product ID from the route
+    const productId = route.params.id;
 
-const fetchProduct = async () => {
-      const productId = route.params.id;
-
-      try {
-        const productDoc = doc(db, 'products', productId);
-        const productSnapshot = await getDoc(productDoc);
-
-        if (productSnapshot.exists()) {
-          product.value = {
-            id: productSnapshot.id,
-            ...productSnapshot.data(),
-          };
-        } else {
-          console.log('No such document!');
-        }
-      } catch (error) {
-        console.error('Error fetching product:', error);
+    try {
+      // Call fetchData to load products
+      fetchData();
+      // Create a reference to the product document
+      const productDoc = doc(db, 'products', productId);
+      const productSnapshot = await getDoc(productDoc);
+      // Check if the product document exists
+      if (productSnapshot.exists()) {
+        product.value = {
+          id: productSnapshot.id,
+          ...productSnapshot.data(),
+        };
+      } else {
+        // console.log('No such document!');
       }
-    };
-  
-    onMounted(fetchProduct); // Move onMounted inside the setup function
+    } catch (error) {
+      console.error('Error fetching product:', error);
+    }
+  };
+
+
+    onMounted(fetchProduct);
 
     return {
       product,
@@ -264,13 +281,13 @@ const fetchProduct = async () => {
       toggleColorDropdown,
       selectColor,
       addToCart,
-      selectedProductInStock,
       toggleProductInStockDropdown,
       selectProductInStock,
+      selectedProductInStock,
       variants,
-      modules: [Pagination, Autoplay]
-
+      modules: [Pagination, Autoplay],
     };
   },
 };
+
 </script>

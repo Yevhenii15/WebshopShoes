@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import HomeView from '../views/HomeView.vue';
-import AboutView from '../views/AboutView.vue';
 import ShoesView from '../views/ShoesView.vue';
 import ProductDetail from '../components/ProductDetail.vue';
 import CheckoutView from '../views/CheckoutView.vue';
@@ -16,11 +15,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutView,
     },
     {
       path: '/shoes',
@@ -93,17 +87,6 @@ router.beforeEach(async (to, from, next) => {
   }
 });
 
-/* const getCurrentUser = () => {
-  return new Promise((resolve, reject) => {
-    const unsubscribe = onAuthStateChanged(
-      getAuth(),
-      (user) => {
-        unsubscribe();
-        resolve(user);
-      },
-      reject
-    );
-  });
-}; */
+
 
 export default router;

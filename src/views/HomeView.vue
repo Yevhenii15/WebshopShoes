@@ -1,8 +1,8 @@
 <template>
   <body class="bg-bg bg-aut bg-top h-[654px] relative" >
     <img src="../images/circletop.png" class="w-auto h-auto absolute top-[-220px] z-0 " alt="">
-    <div class=" relative z-20">
-      <div class="z-10 relative px-[8%] pt-[10%]">
+    <div class=" relative">
+      <div class=" relative px-[8%] pt-[10%]">
         <div>
           <div class="relative top-[10px]">
             <h1 class="text-[3.5rem] text-brownText font-lato uppercase z-10 relative">Shoes</h1>
@@ -21,7 +21,7 @@
               and empower your personal style.”
           </p>
           <div class="border-solid border-2 border-brownText rounded-full py-2 px-6 w-[19%]">
-            <a class="font-lato text-[2rem] text-brownText" href="../shoes">See products</a>
+            <a class="font-lato relative z-[51] text-[2rem] text-brownText" href="../shoes">See products</a>
           </div>
         </div>
       </div>
