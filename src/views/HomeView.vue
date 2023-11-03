@@ -1,6 +1,6 @@
 <template>
   <body class="bg-bg bg-aut bg-top h-[654px] relative" >
-    <img src="../images/circletop.png" class="w-auto h-auto absolute top-[-220px] z-0 " alt="">
+    <img src="../images/circletop.png" class="w-auto h-[500px] absolute md:top-[-220px] top-[-60%] z-0 " alt="">
     <div class=" relative">
       <div class=" relative px-[8%] pt-[10%]">
         <div>
@@ -16,18 +16,18 @@
               <div class="absolute w-[140px] h-[40px] bg-beige top-[40px] left-[-4px] z-0"></div>
             </div>
           </div>
-          <p class="w-[25%] relative top-[-15px] text-brownText text-p font-montserrat">“Step into the future of fashion with our 
+          <p class="w-[25%] hidden md:block relative top-[-15px] text-brownText text-p font-montserrat">“Step into the future of fashion with our 
               new shoe arrivals, designed to inspire 
               and empower your personal style.”
           </p>
-          <div class="border-solid border-2 border-brownText rounded-full py-2 px-6 w-[19%]">
+          <div class="border-solid border-2 border-brownText rounded-full py-2 px-6 w-[90%] md:w-[19%]">
             <a class="font-lato relative z-[51] text-[2rem] text-brownText" href="../shoes">See products</a>
           </div>
         </div>
       </div>
     </div>
     <div class="flex justify-end">
-        <img src="../images/shoes.png" class="w-[650px]  absolute z-10 top-[163px]" alt="">
+        <img src="../images/shoes.png" class="md:w-[43%] w-[80%] absolute z-10 top-[420px] md:top-[163px]" alt="">
         <img src="../images/circlebottom.png" class="w-[1000px] h-[550px] absolute z-0 top-[104px]" alt="">
     </div>
   </body>

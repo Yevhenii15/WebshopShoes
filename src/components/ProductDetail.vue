@@ -1,24 +1,24 @@
 <template>
       <div class="product-detail bg-bg bg-auto bg-top pb-[5rem] w-[100%]">
         <!-- Looping product -->
-        <div class="flex" v-if="product">
-          <div class="relative w-[50%] flex justify-center items-center bg-bg-product  bg-no-repeat	bg-contain		">
+        <div class="flex flex-wrap flex-col md:flex-wrap md:flex-row" v-if="product">
+          <div class="relative md:w-[50%] w-[100%] flex justify-center items-center bg-bg-product  bg-no-repeat	bg-contain		">
             <div class="w-full h-[55vh] flex justify-center items-center ">
               <!-- Slider -->
-              <swiper class=" w-[41%] relative top-[-7.5%] flex justify-center" :modules="modules" :pagination="{ clickable: true }" :autoplay="{ delay: 2500, disableOnInteraction: false }">
+              <swiper class=" w-[41%] relative md:top-[-7.5%] sm:top-[0] top-[-16.5%] flex justify-center" :modules="modules" :pagination="{ clickable: true }" :autoplay="{ delay: 2500, disableOnInteraction: false }">
                 <swiper-slide class="flex justify-center" v-for="(image, index) in product.productImages" :key="index">
-                  <img class="w-[100%] h-[42vh] object-cover object-center" :src="image" :alt="product.productName" />
+                  <img class="w-[100%] md:h-[42vh] sm:h-[32vh] h-[21.5vh] object-cover object-center" :src="image" :alt="product.productName" />
                 </swiper-slide>
               </swiper>
             </div>
           </div>
         
-          <div class="w-[50%] py-[5%]">
+          <div class="md:w-[50%] top-[-190px] md:top-0 relative w-[100%] px-[10%] md:px-0 py-[5%]">
             <h1 class="text-h1-lg text-brownText font-lato mb-1">{{ product.productName }}</h1>
             <p class="font-montserrat text-h1 text-brownText mb-1">Price: <br> <span class="font-lato">{{ product.productPrice }} kr</span></p>
-            <div class="flex">
+            <div class="flex flex-wrap ">
               <!-- Choose size -->
-              <div class="flex flex-col mr-[5%]">
+              <div class="flex flex-col mr-[5%] relative z-[103]">
                 <label for="size" class="text-brownText text-h1 font-montserrat mb-1">Size:</label>
                 <div class="relative">
                   <button
@@ -44,7 +44,7 @@
                 </div>
               </div>
               <!-- Choose color -->
-              <div class="flex flex-col mr-[5%]">
+              <div class="flex flex-col mr-[5%] relative z-[102]">
                 <label for="color" class="text-brownText text-h1 font-montserrat mb-1">Color:</label>
                 <div class="relative">
                   <button
@@ -70,7 +70,7 @@
                 </div>
               </div>
               <!-- Choose quantity -->
-              <div class="flex flex-col">
+              <div class="flex flex-col relative z-[100]">
                 <label for="productInStock" class="text-brownText text-h1 font-montserrat mb-1">Product In Stock:</label>
                 <div class="relative">
                   <button
@@ -97,7 +97,7 @@
               </div>
             </div>
             <p class="w-[40%] text-brownText font-montserrat text-h1 mb-1">Description: </p>
-            <p class="w-[40%] text-brownText font-montserrat text-p mb-3">{{ product.productDescription }}</p>
+            <p class="md:w-[40%] w-[100%]  text-brownText font-montserrat text-p mb-3">{{ product.productDescription }}</p>
             <button
               class="relative z-[51] border-solid border-2 border-brownText font-lato rounded-full bg-[rgba(255,255,255,0.5)] text-[1.6rem] py-2 px-6 text-brownText hover:bg-gray-100"
               @click="addToCart">

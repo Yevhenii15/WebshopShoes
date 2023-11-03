@@ -16,7 +16,7 @@
 
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
-          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10" ref="cartElement">
+          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full xl:pl-10" ref="cartElement">
             <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
               <DialogPanel ref="cartPanel" class="pointer-events-auto w-screen max-w-md">
                 <div class="flex h-full flex-col overflow-y-scroll bg-bg-cart shadow-xl">
@@ -114,13 +114,12 @@ import { useCart } from '../modules/cart.js';
 import router from '../router';
 // Import the defineEmits function
 const { cart, showCart, handleCloseCart, totalItems,  totalPrice, updateQuantityInFirestore, removeFromCart, fetchCart } = useCart();
-// Define the emits function
+//
 const emit = defineEmits();
-// Define the close function
+
 const close = () => {
   emit('close');
 }
-
 const checkout = () => {
   close();
   if (cart.value.length > 0) {

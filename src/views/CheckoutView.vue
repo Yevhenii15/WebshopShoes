@@ -1,5 +1,5 @@
 <template>
-    <div class="checkout bg-bg bg-auto bg-top px-[20%] py-[3rem] w-[100%]">
+    <div class="checkout bg-bg bg-auto bg-top xl:px-[20%] px-[5%] py-[3rem] w-[100%]">
       <div class="bg-[#daad8994] py-[3%] px-[5%] text-brownText relative z-[70] font-lato rounded-[1.25rem]">
         <!-- Checkout -->
         <h1 class="text-h1-lg text-center mb-5">Checkout</h1>

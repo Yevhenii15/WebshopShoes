@@ -4,7 +4,7 @@
       <!-- Title for section -->
       <h1 class="text-[2rem] text-brownText font-lato uppercase text-center mb-5">Add new product</h1>
       <!-- Form for adding new product -->
-      <div class="flex flex-wrap justify-between px-[15%]">
+      <div class="flex flex-wrap justify-center md:justify-between px-[15%]">
         <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-5 placeholder:text-brownText" v-model="addProductData.productName" type="text" placeholder="Product Name">
         <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-5 placeholder:text-brownText" v-model="addProductData.productPrice" type="text" placeholder="Product Price">
         <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-5 placeholder:text-brownText" v-model="addProductData.productInStock" type="text" placeholder="Product In Stock">
@@ -27,12 +27,12 @@
           file:w-[43%] file:mr-3
           hover:file:bg-beige"
 >
-        <button class="btn-add hover:bg-beige bg-[rgba(255,255,255,0.5)]border-solid border-2 border-brownText font-lato text-brownText w-[20%] rounded-full bg-[rgba(255,255,255,0.75)] py-1 px-6" @click="firebaseAddSingleItem">Add Item</button>
+        <button class="btn-add hover:bg-beige bg-[rgba(255,255,255,0.5)]border-solid border-2 border-brownText font-lato text-brownText mt-3 md:mt-0 w-50% md:w-[20%] rounded-full bg-[rgba(255,255,255,0.75)] py-1 px-6" @click="firebaseAddSingleItem">Add Item</button>
       </div>
       <!-- Displaying and editing products -->
       <div class="products flex flex-wrap w-[100%] justify-between">
         <!-- Looping through all products -->
-        <div class="w-[32%] my-10 p-5 rounded-[1.25rem] bg-[rgba(255,255,255,0.75)] z-20" v-for="product in products" :key="product.id">
+        <div class="xl:w-[32%] w-[100%] my-10 p-5 rounded-[1.25rem] bg-[rgba(255,255,255,0.75)] z-20" v-for="product in products" :key="product.id">
             <div v-for="(image, index) in product.productImages" :key="index">
                 <img class="w-[100%] h-[370px] object-cover object-center" :src="image" alt="Product Image" />
                 <!-- To delete img you need to click delete button and after edit update -->
@@ -72,11 +72,11 @@
             <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-2 placeholder:text-brownText"  v-model="product.productName" type="text" placeholder="New Product Name">
             <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-2 placeholder:text-brownText"  v-model="product.productPrice" type="text" placeholder="New Product Price">
             <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-2 placeholder:text-brownText"  v-model="product.productInStock" type="text" placeholder="New Product In Stock">
-            <div class="flex justify-between">
+            <div class="flex justify-between flex-col xl:flex-row">
                 <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-2 placeholder:text-brownText" v-model="product.newSize" type="text" placeholder="New Product Size">
                 <button class="hover:bg-beige border-solid border-2 border-brownText font-lato text-brownText rounded-full bg-transparent py-1 px-6 mb-2" @click="addItemToArray(product.productSize, product.newSize)">Add Size</button>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between flex-col xl:flex-row">
                 <input class="border-solid border-2 border-brownText rounded-full bg-[rgba(255,255,255,0.5)] w-auto py-1 px-6 mb-2 placeholder:text-brownText" v-model="product.newColor" type="text" placeholder="New Product Color">
                 <button class="hover:bg-beige border-solid border-2 border-brownText font-lato text-brownText rounded-full bg-transparent py-1 px-6 mb-2" @click="addItemToArray(product.productColor, product.newColor)">Add Color</button>
             </div>
